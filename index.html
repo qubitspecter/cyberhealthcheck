@@ -592,456 +592,466 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
-    (function () {
-      "use strict";
-const $ = (selector) => document.querySelector(selector);
-      const FEEDS = [
-    { name: 'MITRE ATT&CK blog',  url: 'https://medium.com/feed/mitre-attack' },
-    { name: 'ACSC 1',  url: 'https://www.cyber.gov.au/rss/advisories' },
-    { name: 'ACSC 2',  url: 'https://www.cyber.gov.au/rss/news' },
-    { name: 'ACSC 3',  url: 'https://www.cyber.gov.au/rss/alerts' },
-    { name: 'CISA advisories',    url: 'https://www.cisa.gov/cybersecurity-advisories/all.xml' },
-    { name: 'Krebs on Security',  url: 'https://krebsonsecurity.com/feed/' },
-    { name: 'Schneier on Security', url: 'https://www.schneier.com/feed/atom/' }
-  ];
+<script>
+  (function () {
+    "use strict";
 
-/* ------------------------------------------------------------------
-     RSS feeds (client side)
-  ------------------------------------------------------------------ */
-
-        function safeUrl(u) {
-    try {
-      const p = new URL(u, location.href);
-      return (p.protocol === 'http:' || p.protocol === 'https:') ? p.href : '#';
-    } catch (e) { return '#'; }
-  }
-      
-  const ROUTES = [
-    u => 'https://feeds.cyberhealthcheck.org/?u=' + encodeURIComponent(u)
-  ];
-
-  async function fetchFeedText(url) {
-    let lastErr = new Error('No route');
-    for (const route of ROUTES) {
-      const ctrl = new AbortController();
-      const timer = setTimeout(() => ctrl.abort(), 8000);
-      try {
-        const res = await fetch(route(url), { signal: ctrl.signal });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const text = await res.text();
-        if (!/<(rss|feed|rdf)/i.test(text)) throw new Error('Not a feed');
-        return text;
-      } catch (e) {
-        lastErr = e;
-      } finally {
-        clearTimeout(timer);
-      }
-    }
-    throw lastErr;
-  }
-
-  function parseFeed(xml) {
-    const doc = new DOMParser().parseFromString(xml, 'text/xml');
-    if (doc.querySelector('parsererror')) throw new Error('Parse error');
-    return Array.from(doc.querySelectorAll('item, entry')).map(n => {
-      const title = (n.querySelector('title') || {}).textContent;
-      const linkEl = n.querySelector('link[rel="alternate"], link');
-      const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent.trim()) : '';
-      const dateEl = n.querySelector('pubDate, published, updated, date');
-      const d = dateEl ? new Date(dateEl.textContent.trim()) : null;
-      return {
-        title: (title || 'Untitled').trim(),
-        link: link,
-        date: d && !isNaN(d) ? d : null
-      };
-    });
-  }
-
-  async function loadFeeds() {
-    const root = $('#feeds');
-    root.textContent = '';
-
-    const box = el('section', 'feed');
-    box.appendChild(el('h3', null, ''));
-    const status = el('p', 'state', 'Loading...');
-    box.appendChild(status);
-    root.appendChild(box);
-
-    const feedStore = {
-      items: [],
-      errors: {}
+    const CONFIG = {
+      itemsPerFeed: 5
     };
 
-    await Promise.all(
-      FEEDS.map(async feed => {
-        try {
-          const items = parseFeed(await fetchFeedText(feed.url))
-            .slice(0, CONFIG.itemsPerFeed)
-            .map(it => ({
-              ...it,
-              feedName: feed.name
-            }));
+    const $ = (selector) => document.querySelector(selector);
 
-          feedStore.items.push(...items);
-        } catch (e) {
-          feedStore.errors[feed.name] = e;
-        }
-      })
-    );
-
-    feedStore.items.sort((a, b) => {
-      const timeA = a.date ? a.date.getTime() : -Infinity;
-      const timeB = b.date ? b.date.getTime() : -Infinity;
-      return timeB - timeA;
-    });
-
-    if (!feedStore.items.length) {
-      status.textContent = 'This feed could not be loaded right now.';
-      return;
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
     }
 
-    const ul = el('ul');
-    feedStore.items.forEach(it => {
-      const li = el('li');
-      const a = el('a', null, it.title);
-      a.href = safeUrl(it.link);
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      li.appendChild(a);
-      ul.appendChild(li);
-    });
-    status.replaceWith(ul);
-  }
-      
-      // 10 structured multiple-choice items across Ergonomics, Clinical Hygiene, and Office Systems
-      const QUIZ_QUESTIONS = [
-        {
-          id: 1,
-          category: "ERGONOMICS",
-          prompt: "What is the recommended viewing distance between an operator's eyes and a primary desktop monitor to minimize visual fatigue?",
-          options: [
-            "20 to 30 centimeters (8 to 12 inches)",
-            "50 to 70 centimeters (20 to 28 inches)",
-            "110 to 130 centimeters (43 to 51 inches)",
-            "Directly flush with the front edge of the desk"
-          ],
-          correctIndex: 1,
-          explanation: "Positioning a monitor 50 to 70 cm away (roughly an arm's length) allows the ciliary muscles of the eye to focus comfortably without sustained convergence strain."
-        },
-        {
-          id: 2,
-          category: "CLINICAL HYGIENE",
-          prompt: "Which disinfectant concentration is standard for sanitizing non-porous office keyboards and mice without damaging surface polymers?",
-          options: [
-            "70% isopropyl alcohol applied with a lint-free wipe",
-            "Undiluted sodium hypochlorite (100% household bleach)",
-            "Tap water mixed with standard dish soap",
-            "Aerosol glass cleaner sprayed directly into key switches"
-          ],
-          correctIndex: 0,
-          explanation: "A 70% isopropyl alcohol solution denatures microbial proteins effectively while evaporating cleanly without leaving conductive or corrosive residue on electronics."
-        },
-        {
-          id: 3,
-          category: "ERGONOMICS",
-          prompt: "How should the top bezel of a primary display be vertically aligned relative to a seated user's eyes?",
-          options: [
-            "15 centimeters above horizontal eye level",
-            "At or slightly below horizontal eye level",
-            "Aligned with the user's chest sternum",
-            "Tilted downward at a 45-degree angle"
-          ],
-          correctIndex: 1,
-          explanation: "Aligning the top of the screen at or just below eye level maintains a natural 15°–20° downward gaze angle and prevents cervical spine hyperextension."
-        },
-        {
-          id: 4,
-          category: "OFFICE SYSTEMS",
-          prompt: "During unstaffed night hours, what is the primary security protocol for workstation terminals left powered on for automated updates?",
-          options: [
-            "Leave sessions unlocked so maintenance staff can inspect screens",
-            "Disable network adapters manually before leaving",
-            "Enforce an automatic encrypted screen lock within 3 minutes of inactivity",
-            "Lower monitor brightness to zero without locking the OS"
-          ],
-          correctIndex: 2,
-          explanation: "Automated encrypted session locks prevent unauthorized physical access to sensitive systems while still permitting scheduled background patch management."
-        },
-        {
-          id: 5,
-          category: "CLINICAL HYGIENE",
-          prompt: "What is the minimum wet-contact dwell time required for alcohol-based surface wipes to achieve effective sanitization on desk surfaces?",
-          options: [
-            "2 seconds followed by immediate dry wiping",
-            "At least 30 seconds of visible surface wetness before air drying",
-            "15 minutes of continuous submersion",
-            "Dwell time is unnecessary once the surface is wiped"
-          ],
-          correctIndex: 1,
-          explanation: "Disinfectants require a minimum 30-second wet dwell period to rupture bacterial and viral envelopes; wiping dry prematurely neutralizes efficacy."
-        },
-        {
-          id: 6,
-          category: "ERGONOMICS",
-          prompt: "Which wrist and forearm posture prevents median nerve compression inside the carpal tunnel during extended typing?",
-          options: [
-            "Wrists extended upward at 30 degrees on a hard desk edge",
-            "Forearms parallel to the floor with wrists in a straight, neutral plane",
-            "Elbows tucked tightly behind the torso with wrists angled outward",
-            "Resting full forearm weight onto a sharp desk corner"
-          ],
-          correctIndex: 1,
-          explanation: "Keeping forearms level and wrists neutral minimizes pressure within the carpal tunnel and reduces repetitive strain on flexor tendons."
-        },
-        {
-          id: 7,
-          category: "OFFICE SYSTEMS",
-          prompt: "Why are critical workstation towers and network switches connected to an Uninterruptible Power Supply (UPS) rather than a standard surge strip?",
-          options: [
-            "To increase processor clock speeds during peak hours",
-            "To provide battery ride-through power and graceful shutdown during grid sags or outages",
-            "To eliminate the need for building circuit breakers",
-            "To double the voltage supplied to display monitors"
-          ],
-          correctIndex: 1,
-          explanation: "A UPS bridges transient voltage drops and blackouts with instant battery backup, preventing data corruption and hardware damage."
-        },
-        {
-          id: 8,
-          category: "OFFICE SYSTEMS",
-          prompt: "How should ambient lighting be configured in a small office with illuminated computer screens at night?",
-          options: [
-            "Complete pitch darkness with monitors at 100% peak brightness",
-            "Low-glare indirect bias lighting balanced to reduce screen-to-room contrast",
-            "Direct unshielded overhead spotlights aimed at the monitor glass",
-            "Flashing strobe indicators near the peripheral field of view"
-          ],
-          correctIndex: 1,
-          explanation: "Soft indirect bias lighting prevents pupil constriction-dilation fatigue caused by staring at a bright display inside a pitch-black room."
-        },
-        {
-          id: 9,
-          category: "CLINICAL HYGIENE",
-          prompt: "What is the cleanest cable-management practice beneath clinical and technical workstations?",
-          options: [
-            "Coiling excess power cables loosely on the floor around chair casters",
-            "Routing cables through elevated under-desk trays off the floor for unobstructed sanitization",
-            "Taping power cords across walkway thresholds",
-            "Bundling high-voltage power cables tightly inside air intake vents"
-          ],
-          correctIndex: 1,
-          explanation: "Elevating cables into under-desk trays eliminates trip hazards, prevents caster damage, and allows floor surfaces to be sanitized unobstructed."
-        },
-        {
-          id: 10,
-          category: "ERGONOMICS",
-          prompt: "How frequently should desk-based personnel perform a 20-second visual reset (20-20-20 rule) during continuous screen work?",
-          options: [
-            "Every 20 minutes, focusing on an object at least 20 feet away",
-            "Once every 4 hours during shift change",
-            "Only when headaches or blurred vision begin",
-            "Every 2 minutes by closing eyes tightly for 60 seconds"
-          ],
-          correctIndex: 0,
-          explanation: "Looking 20 feet away for 20 seconds every 20 minutes relaxes the eye's focusing mechanism and restores normal blink rates."
-        }
-      ];
+    const FEEDS = [
+      { name: 'MITRE ATT&CK blog',  url: 'https://medium.com/feed/mitre-attack' },
+      { name: 'ACSC 1',             url: 'https://www.cyber.gov.au/rss/advisories' },
+      { name: 'ACSC 2',             url: 'https://www.cyber.gov.au/rss/news' },
+      { name: 'ACSC 3',             url: 'https://www.cyber.gov.au/rss/alerts' },
+      { name: 'CISA advisories',    url: 'https://www.cisa.gov/cybersecurity-advisories/all.xml' },
+      { name: 'Krebs on Security',  url: 'https://krebsonsecurity.com/feed/' },
+      { name: 'Schneier on Security', url: 'https://www.schneier.com/feed/atom/' }
+    ];
 
-      // Application State
-      const state = {
-        answers: new Array(QUIZ_QUESTIONS.length).fill(null), // null or selected option index
-        lastAnsweredIndex: -1
+    /* ------------------------------------------------------------------
+       RSS feeds (client side)
+    ------------------------------------------------------------------ */
+
+    function safeUrl(u) {
+      try {
+        const p = new URL(u, location.href);
+        return (p.protocol === 'http:' || p.protocol === 'https:') ? p.href : '#';
+      } catch (e) {
+        return '#';
+      }
+    }
+
+    const ROUTES = [
+      u => 'https://feeds.cyberhealthcheck.org/?u=' + encodeURIComponent(u)
+    ];
+
+    async function fetchFeedText(url) {
+      let lastErr = new Error('No route');
+      for (const route of ROUTES) {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 8000);
+        try {
+          const res = await fetch(route(url), { signal: ctrl.signal });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const text = await res.text();
+          if (!/<(rss|feed|rdf)/i.test(text)) throw new Error('Not a feed');
+          return text;
+        } catch (e) {
+          lastErr = e;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      throw lastErr;
+    }
+
+    function parseFeed(xml) {
+      const doc = new DOMParser().parseFromString(xml, 'text/xml');
+      if (doc.querySelector('parsererror')) throw new Error('Parse error');
+      return Array.from(doc.querySelectorAll('item, entry')).map(n => {
+        const title = (n.querySelector('title') || {}).textContent;
+        const linkEl = n.querySelector('link[rel="alternate"], link');
+        const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent.trim()) : '';
+        const dateEl = n.querySelector('pubDate, published, updated, date');
+        const d = dateEl ? new Date(dateEl.textContent.trim()) : null;
+        return {
+          title: (title || 'Untitled').trim(),
+          link: link,
+          date: d && !isNaN(d) ? d : null
+        };
+      });
+    }
+
+    async function loadFeeds() {
+      const root = $('#feeds');
+      if (!root) return;
+
+      root.textContent = '';
+
+      const box = el('section', 'feed');
+      box.appendChild(el('h3', null, 'Security Feeds'));
+      const status = el('p', 'state', 'Loading...');
+      box.appendChild(status);
+      root.appendChild(box);
+
+      const feedStore = {
+        items: [],
+        errors: {}
       };
 
-      // DOM References
-      const questionsContainer = document.getElementById("questionsContainer");
-      const progressStatusText = document.getElementById("progressStatusText");
-      const liveScoreBadge = document.getElementById("liveScoreBadge");
-      const quizProgressBarFill = document.getElementById("quizProgressBarFill");
-      const progressWrapper = document.querySelector(".clinical-progress");
-      const stickyProgressBar = document.getElementById("stickyProgressBar");
+      await Promise.all(
+        FEEDS.map(async feed => {
+          try {
+            const items = parseFeed(await fetchFeedText(feed.url))
+              .slice(0, CONFIG.itemsPerFeed)
+              .map(it => ({
+                ...it,
+                feedName: feed.name
+              }));
 
-      const quizSummary = document.getElementById("quiz-summary");
-      const summaryStatusBadge = document.getElementById("summaryStatusBadge");
-      const summaryNarrative = document.getElementById("summaryNarrative");
-      const summaryScoreValue = document.getElementById("summaryScoreValue");
-      const summaryPercentValue = document.getElementById("summaryPercentValue");
-      const resetQuizBtn = document.getElementById("resetQuizBtn");
+            feedStore.items.push(...items);
+          } catch (e) {
+            feedStore.errors[feed.name] = e;
+          }
+        })
+      );
 
-      const feedbackModalEl = document.getElementById("feedbackModal");
-      const modalStatusBadge = document.getElementById("modalStatusBadge");
-      const modalQuestionRef = document.getElementById("modalQuestionRef");
-      const feedbackModalLabel = document.getElementById("feedbackModalLabel");
-      const modalExplanationText = document.getElementById("modalExplanationText");
-      const modalRunningScore = document.getElementById("modalRunningScore");
+      feedStore.items.sort((a, b) => {
+        const timeA = a.date ? a.date.getTime() : -Infinity;
+        const timeB = b.date ? b.date.getTime() : -Infinity;
+        return timeB - timeA;
+      });
 
-      let feedbackModalInstance = null;
+      if (!feedStore.items.length) {
+        status.textContent = 'This feed could not be loaded right now.';
+        return;
+      }
 
-      /**
-       * Render all 10 question cards into #questionsContainer
-       */
-      function renderQuestions() {
-        const optionLetters = ["A", "B", "C", "D"];
-        const fragment = document.createDocumentFragment();
+      const ul = el('ul');
+      feedStore.items.forEach(it => {
+        const li = el('li');
+        const a = el('a', null, it.title);
+        a.href = safeUrl(it.link);
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        li.appendChild(a);
 
-        QUIZ_QUESTIONS.forEach((item, qIndex) => {
-          const card = document.createElement("article");
-          card.id = `question-${item.id}`;
-          card.className = "quiz-card";
-          card.setAttribute("aria-labelledby", `question-title-${item.id}`);
+        if (it.date) {
+          const t = el(
+            'time',
+            null,
+            it.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+          );
+          t.dateTime = it.date.toISOString();
+          li.appendChild(document.createTextNode(' '));
+          li.appendChild(t);
+        }
 
-          const formattedNum = String(item.id).padStart(2, "0");
+        ul.appendChild(li);
+      });
 
-          // Card Header
-          const header = document.createElement("div");
-          header.className = "quiz-card-header d-flex align-items-center justify-content-between gap-2";
-          header.innerHTML = `
-            <div class="d-flex align-items-center gap-2">
-              <span class="font-mono-code fw-semibold text-primary" style="font-size: 0.82rem;">
-                ITEM ${formattedNum} / 10
-              </span>
-              <span class="text-secondary" aria-hidden="true">&bull;</span>
-              <span class="font-mono-code text-secondary" style="font-size: 0.76rem;">
-                ${item.category}
-              </span>
-            </div>
-            <span id="card-status-${item.id}" class="badge bg-light text-secondary border font-mono-code">
-              PENDING
+      status.replaceWith(ul);
+    }
+
+    /* ------------------------------------------------------------------
+       Workstation & Clinical Hygiene Quiz
+    ------------------------------------------------------------------ */
+
+    const QUIZ_QUESTIONS = [
+      {
+        id: 1,
+        category: "ERGONOMICS",
+        prompt: "What is the recommended viewing distance between an operator's eyes and a primary desktop monitor to minimize visual fatigue?",
+        options: [
+          "20 to 30 centimeters (8 to 12 inches)",
+          "50 to 70 centimeters (20 to 28 inches)",
+          "110 to 130 centimeters (43 to 51 inches)",
+          "Directly flush with the front edge of the desk"
+        ],
+        correctIndex: 1,
+        explanation: "Positioning a monitor 50 to 70 cm away (roughly an arm's length) allows the ciliary muscles of the eye to focus comfortably without sustained convergence strain."
+      },
+      {
+        id: 2,
+        category: "CLINICAL HYGIENE",
+        prompt: "Which disinfectant concentration is standard for sanitizing non-porous office keyboards and mice without damaging surface polymers?",
+        options: [
+          "70% isopropyl alcohol applied with a lint-free wipe",
+          "Undiluted sodium hypochlorite (100% household bleach)",
+          "Tap water mixed with standard dish soap",
+          "Aerosol glass cleaner sprayed directly into key switches"
+        ],
+        correctIndex: 0,
+        explanation: "A 70% isopropyl alcohol solution denatures microbial proteins effectively while evaporating cleanly without leaving conductive or corrosive residue on electronics."
+      },
+      {
+        id: 3,
+        category: "ERGONOMICS",
+        prompt: "How should the top bezel of a primary display be vertically aligned relative to a seated user's eyes?",
+        options: [
+          "15 centimeters above horizontal eye level",
+          "At or slightly below horizontal eye level",
+          "Aligned with the user's chest sternum",
+          "Tilted downward at a 45-degree angle"
+        ],
+        correctIndex: 1,
+        explanation: "Aligning the top of the screen at or just below eye level maintains a natural 15°–20° downward gaze angle and prevents cervical spine hyperextension."
+      },
+      {
+        id: 4,
+        category: "OFFICE SYSTEMS",
+        prompt: "During unstaffed night hours, what is the primary security protocol for workstation terminals left powered on for automated updates?",
+        options: [
+          "Leave sessions unlocked so maintenance staff can inspect screens",
+          "Disable network adapters manually before leaving",
+          "Enforce an automatic encrypted screen lock within 3 minutes of inactivity",
+          "Lower monitor brightness to zero without locking the OS"
+        ],
+        correctIndex: 2,
+        explanation: "Automated encrypted session locks prevent unauthorized physical access to sensitive systems while still permitting scheduled background patch management."
+      },
+      {
+        id: 5,
+        category: "CLINICAL HYGIENE",
+        prompt: "What is the minimum wet-contact dwell time required for alcohol-based surface wipes to achieve effective sanitization on desk surfaces?",
+        options: [
+          "2 seconds followed by immediate dry wiping",
+          "At least 30 seconds of visible surface wetness before air drying",
+          "15 minutes of continuous submersion",
+          "Dwell time is unnecessary once the surface is wiped"
+        ],
+        correctIndex: 1,
+        explanation: "Disinfectants require a minimum 30-second wet dwell period to rupture bacterial and viral envelopes; wiping dry prematurely neutralizes efficacy."
+      },
+      {
+        id: 6,
+        category: "ERGONOMICS",
+        prompt: "Which wrist and forearm posture prevents median nerve compression inside the carpal tunnel during extended typing?",
+        options: [
+          "Wrists extended upward at 30 degrees on a hard desk edge",
+          "Forearms parallel to the floor with wrists in a straight, neutral plane",
+          "Elbows tucked tightly behind the torso with wrists angled outward",
+          "Resting full forearm weight onto a sharp desk corner"
+        ],
+        correctIndex: 1,
+        explanation: "Keeping forearms level and wrists neutral minimizes pressure within the carpal tunnel and reduces repetitive strain on flexor tendons."
+      },
+      {
+        id: 7,
+        category: "OFFICE SYSTEMS",
+        prompt: "Why are critical workstation towers and network switches connected to an Uninterruptible Power Supply (UPS) rather than a standard surge strip?",
+        options: [
+          "To increase processor clock speeds during peak hours",
+          "To provide battery ride-through power and graceful shutdown during grid sags or outages",
+          "To eliminate the need for building circuit breakers",
+          "To double the voltage supplied to display monitors"
+        ],
+        correctIndex: 1,
+        explanation: "A UPS bridges transient voltage drops and blackouts with instant battery backup, preventing data corruption and hardware damage."
+      },
+      {
+        id: 8,
+        category: "OFFICE SYSTEMS",
+        prompt: "How should ambient lighting be configured in a small office with illuminated computer screens at night?",
+        options: [
+          "Complete pitch darkness with monitors at 100% peak brightness",
+          "Low-glare indirect bias lighting balanced to reduce screen-to-room contrast",
+          "Direct unshielded overhead spotlights aimed at the monitor glass",
+          "Flashing strobe indicators near the peripheral field of view"
+        ],
+        correctIndex: 1,
+        explanation: "Soft indirect bias lighting prevents pupil constriction-dilation fatigue caused by staring at a bright display inside a pitch-black room."
+      },
+      {
+        id: 9,
+        category: "CLINICAL HYGIENE",
+        prompt: "What is the cleanest cable-management practice beneath clinical and technical workstations?",
+        options: [
+          "Coiling excess power cables loosely on the floor around chair casters",
+          "Routing cables through elevated under-desk trays off the floor for unobstructed sanitization",
+          "Taping power cords across walkway thresholds",
+          "Bundling high-voltage power cables tightly inside air intake vents"
+        ],
+        correctIndex: 1,
+        explanation: "Elevating cables into under-desk trays eliminates trip hazards, prevents caster damage, and allows floor surfaces to be sanitized unobstructed."
+      },
+      {
+        id: 10,
+        category: "ERGONOMICS",
+        prompt: "How frequently should desk-based personnel perform a 20-second visual reset (20-20-20 rule) during continuous screen work?",
+        options: [
+          "Every 20 minutes, focusing on an object at least 20 feet away",
+          "Once every 4 hours during shift change",
+          "Only when headaches or blurred vision begin",
+          "Every 2 minutes by closing eyes tightly for 60 seconds"
+        ],
+        correctIndex: 0,
+        explanation: "Looking 20 feet away for 20 seconds every 20 minutes relaxes the eye's focusing mechanism and restores normal blink rates."
+      }
+    ];
+
+    const state = {
+      answers: new Array(QUIZ_QUESTIONS.length).fill(null),
+      lastAnsweredIndex: -1
+    };
+
+    const questionsContainer = document.getElementById("questionsContainer");
+    const progressStatusText = document.getElementById("progressStatusText");
+    const liveScoreBadge = document.getElementById("liveScoreBadge");
+    const quizProgressBarFill = document.getElementById("quizProgressBarFill");
+    const progressWrapper = document.querySelector(".clinical-progress");
+    const stickyProgressBar = document.getElementById("stickyProgressBar");
+
+    const quizSummary = document.getElementById("quiz-summary");
+    const summaryStatusBadge = document.getElementById("summaryStatusBadge");
+    const summaryNarrative = document.getElementById("summaryNarrative");
+    const summaryScoreValue = document.getElementById("summaryScoreValue");
+    const summaryPercentValue = document.getElementById("summaryPercentValue");
+    const resetQuizBtn = document.getElementById("resetQuizBtn");
+
+    const feedbackModalEl = document.getElementById("feedbackModal");
+    const modalStatusBadge = document.getElementById("modalStatusBadge");
+    const modalQuestionRef = document.getElementById("modalQuestionRef");
+    const feedbackModalLabel = document.getElementById("feedbackModalLabel");
+    const modalExplanationText = document.getElementById("modalExplanationText");
+    const modalRunningScore = document.getElementById("modalRunningScore");
+
+    let feedbackModalInstance = null;
+
+    function renderQuestions() {
+      if (!questionsContainer) return;
+
+      const optionLetters = ["A", "B", "C", "D"];
+      const fragment = document.createDocumentFragment();
+
+      QUIZ_QUESTIONS.forEach((item, qIndex) => {
+        const card = document.createElement("article");
+        card.id = `question-${item.id}`;
+        card.className = "quiz-card";
+        card.setAttribute("aria-labelledby", `question-title-${item.id}`);
+
+        const formattedNum = String(item.id).padStart(2, "0");
+
+        const header = document.createElement("div");
+        header.className = "quiz-card-header d-flex align-items-center justify-content-between gap-2";
+        header.innerHTML = `
+          <div class="d-flex align-items-center gap-2">
+            <span class="font-mono-code fw-semibold text-primary" style="font-size: 0.82rem;">
+              ITEM ${formattedNum} / 10
             </span>
+            <span class="text-secondary" aria-hidden="true">&bull;</span>
+            <span class="font-mono-code text-secondary" style="font-size: 0.76rem;">
+              ${item.category}
+            </span>
+          </div>
+          <span id="card-status-${item.id}" class="badge bg-light text-secondary border font-mono-code">
+            PENDING
+          </span>
+        `;
+
+        const body = document.createElement("div");
+        body.className = "p-4";
+
+        const promptEl = document.createElement("h3");
+        promptEl.id = `question-title-${item.id}`;
+        promptEl.className = "question-prompt mb-4";
+        promptEl.textContent = item.prompt;
+
+        const optionsList = document.createElement("div");
+        optionsList.className = "d-flex flex-column gap-2";
+        optionsList.setAttribute("role", "group");
+        optionsList.setAttribute("aria-label", `Options for question ${item.id}`);
+
+        item.options.forEach((optText, optIndex) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "option-btn";
+          btn.dataset.qIndex = String(qIndex);
+          btn.dataset.optIndex = String(optIndex);
+
+          btn.innerHTML = `
+            <span class="option-key" aria-hidden="true">${optionLetters[optIndex]}</span>
+            <span class="flex-grow-1">${optText}</span>
           `;
 
-          // Card Body
-          const body = document.createElement("div");
-          body.className = "p-4";
-
-          const promptEl = document.createElement("h3");
-          promptEl.id = `question-title-${item.id}`;
-          promptEl.className = "question-prompt mb-4";
-          promptEl.textContent = item.prompt;
-
-          const optionsList = document.createElement("div");
-          optionsList.className = "d-flex flex-column gap-2";
-          optionsList.setAttribute("role", "group");
-          optionsList.setAttribute("aria-label", `Options for question ${item.id}`);
-
-          item.options.forEach((optText, optIndex) => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "option-btn";
-            btn.dataset.qIndex = String(qIndex);
-            btn.dataset.optIndex = String(optIndex);
-
-            btn.innerHTML = `
-              <span class="option-key" aria-hidden="true">${optionLetters[optIndex]}</span>
-              <span class="flex-grow-1">${optText}</span>
-            `;
-
-            btn.addEventListener("click", () => handleAnswerSelection(qIndex, optIndex));
-            optionsList.appendChild(btn);
-          });
-
-          body.appendChild(promptEl);
-          body.appendChild(optionsList);
-
-          card.appendChild(header);
-          card.appendChild(body);
-          fragment.appendChild(card);
+          btn.addEventListener("click", () => handleAnswerSelection(qIndex, optIndex));
+          optionsList.appendChild(btn);
         });
 
-        questionsContainer.innerHTML = "";
-        questionsContainer.appendChild(fragment);
-      }
+        body.appendChild(promptEl);
+        body.appendChild(optionsList);
 
-      /**
-       * Calculate current completion count and score
-       */
-      function getMetrics() {
-        let completed = 0;
-        let score = 0;
+        card.appendChild(header);
+        card.appendChild(body);
+        fragment.appendChild(card);
+      });
 
-        state.answers.forEach((selectedOpt, idx) => {
-          if (selectedOpt !== null) {
-            completed += 1;
-            if (selectedOpt === QUIZ_QUESTIONS[idx].correctIndex) {
-              score += 1;
-            }
+      questionsContainer.innerHTML = "";
+      questionsContainer.appendChild(fragment);
+    }
+
+    function getMetrics() {
+      let completed = 0;
+      let score = 0;
+
+      state.answers.forEach((selectedOpt, idx) => {
+        if (selectedOpt !== null) {
+          completed += 1;
+          if (selectedOpt === QUIZ_QUESTIONS[idx].correctIndex) {
+            score += 1;
           }
-        });
+        }
+      });
 
-        return { completed, score, total: QUIZ_QUESTIONS.length };
-      }
+      return { completed, score, total: QUIZ_QUESTIONS.length };
+    }
 
-      /**
-       * Update sticky progress bar, completion text, and live score badge
-       */
-      function updateProgressUI() {
-        const { completed, score, total } = getMetrics();
-        const percent = Math.round((completed / total) * 100);
+    function updateProgressUI() {
+      const { completed, score, total } = getMetrics();
+      const percent = Math.round((completed / total) * 100);
 
-        progressStatusText.textContent = `Completed: ${completed} of ${total}`;
-        liveScoreBadge.textContent = `Score: ${score} / ${total}`;
+      if (progressStatusText) progressStatusText.textContent = `Completed: ${completed} of ${total}`;
+      if (liveScoreBadge) liveScoreBadge.textContent = `Score: ${score} / ${total}`;
+      if (quizProgressBarFill) {
         quizProgressBarFill.style.width = `${percent}%`;
+        quizProgressBarFill.classList.toggle("bg-success", completed === total);
+      }
+      if (progressWrapper) {
+        progressWrapper.setAttribute("aria-valuenow", String(percent));
+      }
+    }
 
-        if (progressWrapper) {
-          progressWrapper.setAttribute("aria-valuenow", String(percent));
-        }
+    function handleAnswerSelection(qIndex, selectedOptIndex) {
+      if (state.answers[qIndex] !== null) return;
 
-        if (completed === total) {
-          quizProgressBarFill.classList.add("bg-success");
+      state.answers[qIndex] = selectedOptIndex;
+      state.lastAnsweredIndex = qIndex;
+
+      const question = QUIZ_QUESTIONS[qIndex];
+      const isCorrect = selectedOptIndex === question.correctIndex;
+      const cardEl = document.getElementById(`question-${question.id}`);
+      const statusBadge = document.getElementById(`card-status-${question.id}`);
+      const buttons = cardEl ? cardEl.querySelectorAll(".option-btn") : [];
+
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        if (idx === question.correctIndex) {
+          btn.classList.add("option-correct");
+        } else if (idx === selectedOptIndex && !isCorrect) {
+          btn.classList.add("option-incorrect");
         } else {
-          quizProgressBarFill.classList.remove("bg-success");
+          btn.classList.add("option-neutral-locked");
         }
+      });
+
+      if (statusBadge) {
+        statusBadge.className = isCorrect
+          ? "badge text-bg-success font-mono-code"
+          : "badge text-bg-danger font-mono-code";
+        statusBadge.textContent = isCorrect ? "CORRECT" : "INCORRECT";
       }
 
-      /**
-       * Evaluate user's choice, lock options, update UI, and trigger feedback modal
-       */
-      function handleAnswerSelection(qIndex, selectedOptIndex) {
-        // Prevent re-answering a locked question
-        if (state.answers[qIndex] !== null) {
-          return;
-        }
+      updateProgressUI();
 
-        state.answers[qIndex] = selectedOptIndex;
-        state.lastAnsweredIndex = qIndex;
+      const { score, total } = getMetrics();
+      const formattedNum = String(question.id).padStart(2, "0");
 
-        const question = QUIZ_QUESTIONS[qIndex];
-        const isCorrect = selectedOptIndex === question.correctIndex;
-        const cardEl = document.getElementById(`question-${question.id}`);
-        const statusBadge = document.getElementById(`card-status-${question.id}`);
-        const buttons = cardEl.querySelectorAll(".option-btn");
+      if (modalQuestionRef) modalQuestionRef.textContent = `ITEM ${formattedNum} / ${total}`;
+      if (modalExplanationText) modalExplanationText.textContent = question.explanation;
+      if (modalRunningScore) modalRunningScore.textContent = `Current Score: ${score} / ${total}`;
 
-        // Lock all 4 buttons and apply clinical correct/incorrect styling
-        buttons.forEach((btn, idx) => {
-          btn.disabled = true;
-          if (idx === question.correctIndex) {
-            btn.classList.add("option-correct");
-          } else if (idx === selectedOptIndex && !isCorrect) {
-            btn.classList.add("option-incorrect");
-          } else {
-            btn.classList.add("option-neutral-locked");
-          }
-        });
-
-        // Update card header badge
-        if (statusBadge) {
-          statusBadge.className = isCorrect
-            ? "badge text-bg-success font-mono-code"
-            : "badge text-bg-danger font-mono-code";
-          statusBadge.textContent = isCorrect ? "CORRECT" : "INCORRECT";
-        }
-
-        updateProgressUI();
-
-        const { score, total } = getMetrics();
-
-        // Populate Modal Content
-        const formattedNum = String(question.id).padStart(2, "0");
-        modalQuestionRef.textContent = `ITEM ${formattedNum} / ${total}`;
-        modalExplanationText.textContent = question.explanation;
-        modalRunningScore.textContent = `Current Score: ${score} / ${total}`;
-
+      if (modalStatusBadge && feedbackModalLabel) {
         if (isCorrect) {
           modalStatusBadge.className = "badge rounded-pill text-bg-success px-3 py-2 fs-6";
           modalStatusBadge.textContent = "Correct";
@@ -1051,60 +1061,48 @@ const $ = (selector) => document.querySelector(selector);
           modalStatusBadge.textContent = "Incorrect";
           feedbackModalLabel.textContent = "Protocol Deviation";
         }
-
-        // Open Bootstrap 5 Modal
-        if (feedbackModalInstance) {
-          feedbackModalInstance.show();
-        }
       }
 
-      /**
-       * Smoothly scroll to a target element while accounting for the sticky progress header
-       */
-      function scrollToElementWithOffset(targetEl) {
-        if (!targetEl) return;
-
-        const stickyHeight = stickyProgressBar ? stickyProgressBar.offsetHeight : 0;
-        const targetRect = targetEl.getBoundingClientRect();
-        const absoluteTop = window.pageYOffset + targetRect.top;
-        const offsetPosition = Math.max(0, absoluteTop - stickyHeight - 20);
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth"
-        });
+      if (feedbackModalInstance) {
+        feedbackModalInstance.show();
       }
+    }
 
-      /**
-       * Find the next unanswered question after the current index, or return null if all 10 are complete
-       */
-      function findNextUnansweredQuestion(startIndex) {
-        const total = QUIZ_QUESTIONS.length;
-        // First search forward from startIndex + 1 to end
-        for (let i = startIndex + 1; i < total; i++) {
-          if (state.answers[i] === null) {
-            return QUIZ_QUESTIONS[i];
-          }
-        }
-        // If user skipped an earlier item, wrap around from 0 to startIndex
-        for (let i = 0; i < startIndex; i++) {
-          if (state.answers[i] === null) {
-            return QUIZ_QUESTIONS[i];
-          }
-        }
-        return null;
+    function scrollToElementWithOffset(targetEl) {
+      if (!targetEl) return;
+
+      const stickyHeight = stickyProgressBar ? stickyProgressBar.offsetHeight : 0;
+      const targetRect = targetEl.getBoundingClientRect();
+      const absoluteTop = window.pageYOffset + targetRect.top;
+      const offsetPosition = Math.max(0, absoluteTop - stickyHeight - 20);
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+
+    function findNextUnansweredQuestion(startIndex) {
+      const total = QUIZ_QUESTIONS.length;
+      for (let i = startIndex + 1; i < total; i++) {
+        if (state.answers[i] === null) return QUIZ_QUESTIONS[i];
       }
+      for (let i = 0; i < startIndex; i++) {
+        if (state.answers[i] === null) return QUIZ_QUESTIONS[i];
+      }
+      return null;
+    }
 
-      /**
-       * Populate and reveal the Final Results Summary Card
-       */
-      function showFinalSummary() {
-        const { score, total } = getMetrics();
-        const percent = Math.round((score / total) * 100);
+    function showFinalSummary() {
+      if (!quizSummary) return;
 
-        summaryScoreValue.textContent = `${score} / ${total}`;
-        summaryPercentValue.textContent = `${percent}%`;
+      const { score, total } = getMetrics();
+      const percent = Math.round((score / total) * 100);
 
+      if (summaryScoreValue) summaryScoreValue.textContent = `${score} / ${total}`;
+      if (summaryPercentValue) summaryPercentValue.textContent = `${percent}%`;
+
+      if (summaryStatusBadge && summaryNarrative) {
         if (percent >= 80) {
           summaryStatusBadge.className = "badge text-bg-success fs-6 px-3 py-2";
           summaryStatusBadge.textContent = "PROTOCOL CERTIFIED";
@@ -1121,68 +1119,65 @@ const $ = (selector) => document.querySelector(selector);
           summaryNarrative.textContent =
             "Multiple protocol deviations detected. Review the workstation benchmarks below and reset to re-evaluate.";
         }
-
-        quizSummary.classList.remove("d-none");
-        scrollToElementWithOffset(quizSummary);
       }
 
-      /**
-       * Reset all quiz state, re-render fresh cards, and scroll smoothly to Question 1
-       */
-      function resetQuiz() {
-        state.answers.fill(null);
-        state.lastAnsweredIndex = -1;
+      quizSummary.classList.remove("d-none");
+      scrollToElementWithOffset(quizSummary);
+    }
 
-        quizSummary.classList.add("d-none");
+    function resetQuiz() {
+      state.answers.fill(null);
+      state.lastAnsweredIndex = -1;
+
+      if (quizSummary) quizSummary.classList.add("d-none");
+      renderQuestions();
+      updateProgressUI();
+
+      const firstQuestion = document.getElementById("question-1");
+      scrollToElementWithOffset(firstQuestion);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadFeeds();
+
+      try {
         renderQuestions();
         updateProgressUI();
 
-        const firstQuestion = document.getElementById("question-1");
-        scrollToElementWithOffset(firstQuestion);
-      }
+        if (feedbackModalEl && window.bootstrap) {
+          feedbackModalInstance = new bootstrap.Modal(feedbackModalEl, {
+            backdrop: "static",
+            keyboard: true
+          });
 
-      // Initialize on DOMContentLoaded
-      document.addEventListener("DOMContentLoaded", () => {
-        try {
-          renderQuestions();
-          updateProgressUI();
+          feedbackModalEl.addEventListener("hidden.bs.modal", () => {
+            if (state.lastAnsweredIndex === -1) return;
 
-          if (feedbackModalEl && window.bootstrap) {
-            feedbackModalInstance = new bootstrap.Modal(feedbackModalEl, {
-              backdrop: "static",
-              keyboard: true
-            });
+            const nextQuestion = findNextUnansweredQuestion(state.lastAnsweredIndex);
+            if (nextQuestion) {
+              const nextCard = document.getElementById(`question-${nextQuestion.id}`);
+              scrollToElementWithOffset(nextCard);
 
-            // Trigger smooth scroll immediately after modal finishes closing
-            feedbackModalEl.addEventListener("hidden.bs.modal", () => {
-              if (state.lastAnsweredIndex === -1) return;
-
-              const nextQuestion = findNextUnansweredQuestion(state.lastAnsweredIndex);
-              if (nextQuestion) {
-                const nextCard = document.getElementById(`question-${nextQuestion.id}`);
-                scrollToElementWithOffset(nextCard);
-
-                if (nextCard) {
-                  nextCard.classList.add("card-focus-pulse");
-                  setTimeout(() => {
-                    nextCard.classList.remove("card-focus-pulse");
-                  }, 1100);
-                }
-              } else {
-                showFinalSummary();
+              if (nextCard) {
+                nextCard.classList.add("card-focus-pulse");
+                setTimeout(() => {
+                  nextCard.classList.remove("card-focus-pulse");
+                }, 1100);
               }
-            });
-          }
-
-          if (resetQuizBtn) {
-            resetQuizBtn.addEventListener("click", resetQuiz);
-          }
-        } catch (err) {
-          console.error("Quiz initialization error:", err);
+            } else {
+              showFinalSummary();
+            }
+          });
         }
-      });
-      loadFeeds();
-    })();
-  </script>
+
+        if (resetQuizBtn) {
+          resetQuizBtn.addEventListener("click", resetQuiz);
+        }
+      } catch (err) {
+        console.error("Quiz initialization error:", err);
+      }
+    });
+  })();
+</script>
 </body>
 </html>
