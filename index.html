@@ -155,11 +155,38 @@
   .feed { border-top: 1px solid var(--line); padding: .9rem 0; }
   .feed h3 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
   .feed ul { list-style: none; margin: 0; padding: 0; }
-  .feed li { margin: 0 0 .6rem; font-size: .9rem; line-height: 1.4; }
-  .feed li time { display: block; color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+  /*.feed li { margin: 0 0 .6rem; font-size: .9rem; line-height: 1.4; }*/
+  /*.feed li time { display: block; color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }*/
   .feed .state { margin: 0; font-size: .9rem; color: var(--muted); }
   @media (max-width: 900px) { .feeds { position: static; } }
 
+.feed li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.feed li a {
+  flex: 1 1 auto;
+  text-decoration: none;
+}
+
+.feed li a:hover {
+  text-decoration: underline;
+}
+
+.feed li time,
+.feed li .meta {
+  flex: 0 0 auto;
+  font-size: 0.875em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+  
   /* Modal */
   dialog { padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); max-width: 94vw; }
   dialog::backdrop { background: rgba(21, 35, 44, .6); }
