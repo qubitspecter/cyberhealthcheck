@@ -351,10 +351,6 @@
     <div class="container py-3 py-md-5">
       <div class="row">
         <div class="col-12 col-xl-10">
-          <div class="hero-eyebrow mb-3">
-            <span class="hero-status-dot" aria-hidden="true"></span>
-            <span class="font-mono-code">PROTOCOL OPS-204 // NIGHT SHIFT DIAGNOSTICS</span>
-          </div>
           <h1 class="hero-title display-5 mb-4">Why does this page exist?</h1>
           <div class="hero-prose">
             <p>Cyber security looks like an industry that is failing. Major breaches now happen daily. The smaller ones land closer to home: it is hard to meet friends without one of them knowing someone directly affected by a hack since the last catch up.</p>
@@ -483,26 +479,11 @@
       <!-- 3 Equal Columns on Large Screens (lg), Stacked Single Column on Mobile -->
       <div class="row g-4">
         <!-- Column 1 -->
-        <div class="col-12 col-lg-4">
-          <article class="spec-card p-4">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-              <span class="spec-code-tag font-mono-code">MODULE 01</span>
-              <span class="font-mono-code small text-secondary tabular-nums">50–70 CM</span>
-            </div>
-            <h3 class="h5 fw-bold mb-2">Optical &amp; Postural Ergonomics</h3>
-            <p class="text-secondary small mb-3">
-              Primary display monitors must sit at arm's length with the top bezel aligned at or slightly below horizontal eye level to eliminate cervical flexion strain during extended terminal monitoring.
-            </p>
-            <ul class="list-unstyled small text-secondary mb-0 pt-2 border-top">
-              <li class="mb-1"><strong class="text-dark">Elbow Angle:</strong> 90°–105° neutral forearm plane</li>
-              <li><strong class="text-dark">Luminance Ratio:</strong> 3:1 max task-to-ambient contrast</li>
-            </ul>
-          </article>
-        </div>
+        <div class="col-12 col-lg-4" id="feeds0"></div>
 
         <!-- Column 2 -->
-        <div class="col-12 col-lg-4">
-          <article class="spec-card p-4">
+        <div class="col-12 col-lg-4" id="feed1">
+          <!-- <article class="spec-card p-4">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <span class="spec-code-tag font-mono-code">MODULE 02</span>
               <span class="font-mono-code small text-secondary tabular-nums">70% IPA</span>
@@ -515,11 +496,11 @@
               <li class="mb-1"><strong class="text-dark">Dwell Time:</strong> Minimum 30 seconds wet contact</li>
               <li><strong class="text-dark">Cycle Interval:</strong> Between every shift handover</li>
             </ul>
-          </article>
+          </article> -->
         </div>
 
         <!-- Column 3 -->
-        <div class="col-12 col-lg-4" id="feeds">x</div>
+        <div class="col-12 col-lg-4" id="feed2"></div>
       </div>
     </div>
   </section>
@@ -672,23 +653,36 @@
         };
       });
     }
+const CONFIG = {
+      itemsPerFeed: 6,
+      chunkSize: 6
+    };
+
+    // 0-based array of chunks, each containing up to 6 items: feedChunks[0], feedChunks[1], ...
+    let feedChunks = [];
+
+    function chunkArray(arr, size) {
+      const chunks = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+      }
+      return chunks;
+    }
+
+    function setFeedTargetsStatus(message) {
+      for (let i = 0; ; i++) {
+        const target = $(`#feed${i}`);
+        if (!target) break;
+        target.textContent = '';
+        target.appendChild(el('p', 'state', message));
+      }
+    }
 
     async function loadFeeds() {
-      const root = $('#feeds');
-      if (!root) return;
+      feedChunks = [];
+      setFeedTargetsStatus('Loading...');
 
-      root.textContent = '';
-
-      const box = el('section', 'feed');
-      box.appendChild(el('h3', null, 'Security Feeds'));
-      const status = el('p', 'state', 'Loading...');
-      box.appendChild(status);
-      root.appendChild(box);
-
-      const feedStore = {
-        items: [],
-        errors: {}
-      };
+      const allItems = [];
 
       await Promise.all(
         FEEDS.map(async feed => {
@@ -700,48 +694,61 @@
                 feedName: feed.name
               }));
 
-            feedStore.items.push(...items);
+            allItems.push(...items);
           } catch (e) {
-            feedStore.errors[feed.name] = e;
           }
         })
       );
 
-      feedStore.items.sort((a, b) => {
+      if (!allItems.length) {
+        setFeedTargetsStatus('This feed could not be loaded right now.');
+        return;
+      }
+
+      allItems.sort((a, b) => {
         const timeA = a.date ? a.date.getTime() : -Infinity;
         const timeB = b.date ? b.date.getTime() : -Infinity;
         return timeB - timeA;
       });
 
-      if (!feedStore.items.length) {
-        status.textContent = 'This feed could not be loaded right now.';
-        return;
+      feedChunks = chunkArray(allItems, CONFIG.chunkSize);
+
+      // Clear any leftover content in #feed0, #feed1, ... before populating
+      for (let i = 0; ; i++) {
+        const target = $(`#feed${i}`);
+        if (!target) break;
+        target.textContent = '';
       }
 
-      const ul = el('ul');
-      feedStore.items.forEach(it => {
-        const li = el('li');
-        const a = el('a', null, it.title);
-        a.href = safeUrl(it.link);
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-        li.appendChild(a);
+      feedChunks.forEach((group, chunkIndex) => {
+        const target = $(`#feed${chunkIndex}`);
+        if (!target) return;
 
-        if (it.date) {
-          const t = el(
-            'time',
-            null,
-            it.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
-          );
-          t.dateTime = it.date.toISOString();
-          li.appendChild(document.createTextNode(' '));
-          li.appendChild(t);
-        }
+        const ul = el('ul');
+        group.forEach(it => {
+          const li = el('li');
+          const a = el('a', null, `${it.feedName}: ${it.title}`);
+          a.href = safeUrl(it.link);
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          li.appendChild(a);
 
-        ul.appendChild(li);
+          if (it.date) {
+            const t = el(
+              'time',
+              null,
+              it.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
+            );
+            t.dateTime = it.date.toISOString();
+            li.appendChild(document.createTextNode(' '));
+            li.appendChild(t);
+          }
+
+          ul.appendChild(li);
+        });
+
+        target.appendChild(ul);
       });
-
-      status.replaceWith(ul);
     }
 
     /* ------------------------------------------------------------------
