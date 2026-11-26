@@ -894,7 +894,6 @@
           feedbackModalLabel.textContent = "Protocol Deviation";
         }
       }
-
       if (feedbackModalInstance) {
         feedbackModalInstance.show();
       }
@@ -924,13 +923,10 @@
       }
       return null;
     }
-
     function showFinalSummary() {
       if (!quizSummary) return;
-
       const { score, total } = getMetrics();
       const percent = Math.round((score / total) * 100);
-
       if (summaryScoreValue) summaryScoreValue.textContent = `${score} / ${total}`;
       if (summaryPercentValue) summaryPercentValue.textContent = `${percent}%`;
 
@@ -952,44 +948,34 @@
             "Multiple protocol deviations detected. Review the workstation benchmarks below and reset to re-evaluate.";
         }
       }
-
       quizSummary.classList.remove("d-none");
       scrollToElementWithOffset(quizSummary);
     }
-
     function resetQuiz() {
       state.answers.fill(null);
       state.lastAnsweredIndex = -1;
-
       if (quizSummary) quizSummary.classList.add("d-none");
       renderQuestions();
       updateProgressUI();
-
       const firstQuestion = document.getElementById("question-1");
       scrollToElementWithOffset(firstQuestion);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      loadFeeds();
-
       try {
         renderQuestions();
         updateProgressUI();
-
         if (feedbackModalEl && window.bootstrap) {
           feedbackModalInstance = new bootstrap.Modal(feedbackModalEl, {
             backdrop: "static",
             keyboard: true
           });
-
           feedbackModalEl.addEventListener("hidden.bs.modal", () => {
             if (state.lastAnsweredIndex === -1) return;
-
             const nextQuestion = findNextUnansweredQuestion(state.lastAnsweredIndex);
             if (nextQuestion) {
               const nextCard = document.getElementById(`question-${nextQuestion.id}`);
               scrollToElementWithOffset(nextCard);
-
               if (nextCard) {
                 nextCard.classList.add("card-focus-pulse");
                 setTimeout(() => {
@@ -1001,7 +987,6 @@
             }
           });
         }
-
         if (resetQuizBtn) {
           resetQuizBtn.addEventListener("click", resetQuiz);
         }
