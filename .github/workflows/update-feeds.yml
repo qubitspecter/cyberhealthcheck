@@ -35,11 +35,14 @@ jobs:
           fetch krebs            https://krebsonsecurity.com/feed/
           fetch schneier         https://www.schneier.com/feed/atom/
 
+      - name: Rebuild page
+        run: python3 scripts/build_feeds.py
+
       - name: Commit if changed
         run: |
           git config user.name "feed-bot"
           git config user.email "feed-bot@users.noreply.github.com"
-          git add feeds
+          git add feeds index.html
           if ! git diff --cached --quiet; then
             git commit -m "Update feeds"
             git push
