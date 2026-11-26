@@ -1106,8 +1106,109 @@
           console.error("Quiz initialization error:", err);
         }
       });
+
+      /* ------------------------------------------------------------------
+     RSS feeds (client side)
+  ------------------------------------------------------------------ */
+  const ROUTES = [
+    u => 'https://feeds.cyberhealthcheck.org/?u=' + encodeURIComponent(u)
+  ];
+
+  async function fetchFeedText(url) {
+    let lastErr = new Error('No route');
+    for (const route of ROUTES) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      try {
+        const res = await fetch(route(url), { signal: ctrl.signal });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        if (!/<(rss|feed|rdf)/i.test(text)) throw new Error('Not a feed');
+        return text;
+      } catch (e) {
+        lastErr = e;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    throw lastErr;
+  }
+
+  function parseFeed(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Parse error');
+    return Array.from(doc.querySelectorAll('item, entry')).map(n => {
+      const title = (n.querySelector('title') || {}).textContent;
+      const linkEl = n.querySelector('link[rel="alternate"], link');
+      const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent.trim()) : '';
+      const dateEl = n.querySelector('pubDate, published, updated, date');
+      const d = dateEl ? new Date(dateEl.textContent.trim()) : null;
+      return {
+        title: (title || 'Untitled').trim(),
+        link: link,
+        date: d && !isNaN(d) ? d : null
+      };
+    });
+  }
+
+  async function loadFeeds() {
+    const root = $('#feeds');
+    root.textContent = '';
+
+    const box = el('section', 'feed');
+    box.appendChild(el('h3', null, ''));
+    const status = el('p', 'state', 'Loading...');
+    box.appendChild(status);
+    root.appendChild(box);
+
+    const feedStore = {
+      items: [],
+      errors: {}
+    };
+
+    await Promise.all(
+      FEEDS.map(async feed => {
+        try {
+          const items = parseFeed(await fetchFeedText(feed.url))
+            .slice(0, CONFIG.itemsPerFeed)
+            .map(it => ({
+              ...it,
+              feedName: feed.name
+            }));
+
+          feedStore.items.push(...items);
+        } catch (e) {
+          feedStore.errors[feed.name] = e;
+        }
+      })
+    );
+
+    feedStore.items.sort((a, b) => {
+      const timeA = a.date ? a.date.getTime() : -Infinity;
+      const timeB = b.date ? b.date.getTime() : -Infinity;
+      return timeB - timeA;
+    });
+
+    if (!feedStore.items.length) {
+      status.textContent = 'This feed could not be loaded right now.';
+      return;
+    }
+
+    const ul = el('ul');
+    feedStore.items.forEach(it => {
+      const li = el('li');
+      const a = el('a', null, it.title);
+      a.href = safeUrl(it.link);
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    status.replaceWith(ul);
+  }
+
+      
     })();
   </script>
-  <script src="/i.js"></script>
 </body>
 </html>
