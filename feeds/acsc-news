@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0" xml:base="https://www.cyber.gov.au/">
+  <channel>
+    <title>ASD's ACSC - News RSS</title>
+    <link>https://www.cyber.gov.au/</link>
+    <description/>
+    <language>en</language>
+    
+    <item>
+  <title>Secure AI testing to reduce unauthorised access</title>
+  <link>https://www.cyber.gov.au/news/secure-ai-testing-to-reduce-unauthorised-access</link>
+  <description>Learn how to securely test AI and reduce the risk of unauthorised access beyond approved testing environments.</description>
+  <pubDate>Fri, 06 Nov 2026 11:12:49 +1100</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/secure-ai-testing-to-reduce-unauthorised-access</guid>
+    </item>
+<item>
+  <title>New guidance on open-weight AI models </title>
+  <link>https://www.cyber.gov.au/news/new-guidance-on-open-weight-ai-models</link>
+  <description>Learn about the benefits, risks and secure operation of open-weight AI Models with new ASD guidance.&amp;nbsp;</description>
+  <pubDate>Thu, 05 Nov 2026 12:06:21 +1100</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/new-guidance-on-open-weight-ai-models</guid>
+    </item>
+<item>
+  <title>Updated guidance supports vendor talks on post-quantum cryptography</title>
+  <link>https://www.cyber.gov.au/news/updated-guidance-supports-vendor-talks-on-post-quantum-cryptography</link>
+  <description>Updated guidance helps organisations engage vendors, assess readiness and support planning for post-quantum cryptography.</description>
+  <pubDate>Thu, 05 Nov 2026 12:02:34 +1100</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/updated-guidance-supports-vendor-talks-on-post-quantum-cryptography</guid>
+    </item>
+<item>
+  <title>ASD releases seventh annual Cyber Threat Report 2025-26</title>
+  <link>https://www.cyber.gov.au/news/asd-releases-seventh-annual-cyber-threat-report-2025-26</link>
+  <description>Know the threat. Strengthen your defences. Turn cyber intelligence into cyber resilience</description>
+  <pubDate>Mon, 19 Oct 2026 08:00:00 +1100</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/asd-releases-seventh-annual-cyber-threat-report-2025-26</guid>
+    </item>
+<item>
+  <title>ASD Essentials: evolving our approach to cyber security resilience</title>
+  <link>https://www.cyber.gov.au/news/asd-essentials-evolving-our-approach-to-cyber-security-resilience</link>
+  <description>Building on the Essential Eight, the ASD Essentials provides practical, threat-informed guidance to help organisations strengthen cyber resilience across modern technology environments.</description>
+  <pubDate>Wed, 07 Oct 2026 13:47:09 +1100</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/asd-essentials-evolving-our-approach-to-cyber-security-resilience</guid>
+    </item>
+<item>
+  <title>Take a second to stay secure this Cyber Security Action Month</title>
+  <link>https://www.cyber.gov.au/news/take-a-second-to-stay-secure-this-cyber-security-action-month</link>
+  <description>Move from cyber awareness to action.</description>
+  <pubDate>Fri, 25 Sep 2026 11:33:24 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/take-a-second-to-stay-secure-this-cyber-security-action-month</guid>
+    </item>
+<item>
+  <title>Digital camouflage: how crypters hide malware</title>
+  <link>https://www.cyber.gov.au/news/digital-camouflage-how-crypters-hide-malware</link>
+  <description>Learn how crypters help malware evade detection, the risks they create, and the steps you can take to strengthen your cyber defences.</description>
+  <pubDate>Tue, 08 Sep 2026 12:46:51 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/digital-camouflage-how-crypters-hide-malware</guid>
+    </item>
+<item>
+  <title>Updated guidance on detecting and mitigating Active Directory compromises</title>
+  <link>https://www.cyber.gov.au/news/updated-guidance-on-detecting-and-mitigating-active-directory-compromises</link>
+  <description>Learn how malicious actors target Microsoft Active Directory environments, why they are critical to secure and how to reduce the likelihood of cyber attacks.</description>
+  <pubDate>Tue, 15 Sep 2026 20:19:28 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/updated-guidance-on-detecting-and-mitigating-active-directory-compromises</guid>
+    </item>
+<item>
+  <title>ASD releases new guidance on the agentic AI harnesses</title>
+  <link>https://www.cyber.gov.au/news/asd-releases-new-guidance-on-the-agentic-ai-harnesses</link>
+  <description>Understand how the agentic AI harness influences security, governance and operational risk in agentic AI systems.</description>
+  <pubDate>Tue, 22 Sep 2026 10:50:04 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/asd-releases-new-guidance-on-the-agentic-ai-harnesses</guid>
+    </item>
+<item>
+  <title>Consultation on evolution of Essential Eight</title>
+  <link>https://www.cyber.gov.au/news/consultation-on-evolution-of-essential-eight</link>
+  <description>We’re consulting ASD network partners on evolving the Essential Eight cyber security framework to increase flexibility and support stronger cyber resilience.</description>
+  <pubDate>Wed, 02 Sep 2026 12:05:23 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/consultation-on-evolution-of-essential-eight</guid>
+    </item>
+<item>
+  <title>New advice to help organisations isolate their vital OT and enabling systems from other networks</title>
+  <link>https://www.cyber.gov.au/news/new-advice-to-help-organisations-isolate-their-vital-ot-and-enabling-systems-from-other-networks</link>
+  <description>Learn how to isolate vital OT and enabling systems from all other networks. This proactive measure can disrupt adversaries' ability to carry out cyber attacks, contain attacks already in progress, and maintain essential services during periods of crisis or service disruption.</description>
+  <pubDate>Wed, 02 Sep 2026 12:05:23 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/new-advice-to-help-organisations-isolate-their-vital-ot-and-enabling-systems-from-other-networks</guid>
+    </item>
+<item>
+  <title>New AI frontier cyber threat guidance for boards of directors</title>
+  <link>https://www.cyber.gov.au/news/new-ai-frontier-cyber-threat-guidance-for-boards-of-directors</link>
+  <description>Questions for boards to ask about AI cyber threats.</description>
+  <pubDate>Wed, 02 Sep 2026 12:05:23 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/new-ai-frontier-cyber-threat-guidance-for-boards-of-directors</guid>
+    </item>
+<item>
+  <title>Updated guidance on the 2026 Minimum Elements for a Software Bill of Materials</title>
+  <link>https://www.cyber.gov.au/news/updated-guidance-on-the-2026-minimum-elements-for-a-software-bill-of-materials</link>
+  <description>We've joined international partners to update SBOM minimum elements guidance, helping organisations improve software transparency and supply chain security.</description>
+  <pubDate>Wed, 02 Sep 2026 12:05:23 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/updated-guidance-on-the-2026-minimum-elements-for-a-software-bill-of-materials</guid>
+    </item>
+<item>
+  <title>Using AI to strengthen cyber defence</title>
+  <link>https://www.cyber.gov.au/news/using-ai-to-strengthen-cyber-defence</link>
+  <description>Our latest publication explains how and where organisations can use AI to strengthen their cyber security while mitigating associated risks.</description>
+  <pubDate>Wed, 02 Sep 2026 12:05:23 +1000</pubDate>
+    <dc:creator>Australian Cyber Security Centre (ACSC)</dc:creator>
+    <guid isPermaLink="true">https://www.cyber.gov.au/news/using-ai-to-strengthen-cyber-defence</guid>
+    </item>
+
+  </channel>
+</rss>
