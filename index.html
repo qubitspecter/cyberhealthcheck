@@ -609,6 +609,14 @@
 /* ------------------------------------------------------------------
      RSS feeds (client side)
   ------------------------------------------------------------------ */
+
+        function safeUrl(u) {
+    try {
+      const p = new URL(u, location.href);
+      return (p.protocol === 'http:' || p.protocol === 'https:') ? p.href : '#';
+    } catch (e) { return '#'; }
+  }
+      
   const ROUTES = [
     u => 'https://feeds.cyberhealthcheck.org/?u=' + encodeURIComponent(u)
   ];
