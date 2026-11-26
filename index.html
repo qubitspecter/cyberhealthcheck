@@ -728,18 +728,6 @@ const CONFIG = {
           a.target = '_blank';
           a.rel = 'noopener noreferrer';
           li.appendChild(a);
-
-          if (it.date) {
-            const t = el(
-              'time',
-              null,
-              it.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })
-            );
-            t.dateTime = it.date.toISOString();
-            li.appendChild(document.createTextNode(' '));
-            li.appendChild(t);
-          }
-
           ul.appendChild(li);
         });
 
