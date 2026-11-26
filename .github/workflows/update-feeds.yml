@@ -1,0 +1,46 @@
+name: Update feeds
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch feeds
+        run: |
+          mkdir -p feeds
+          fetch() {
+            tmp=$(mktemp)
+            if curl -fsSL --max-time 30 --retry 2 \
+                 -A "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0" \
+                 -o "$tmp" "$2" && grep -qiE '<(rss|feed|rdf)' "$tmp"; then
+              mv "$tmp" "feeds/$1.xml"
+            else
+              echo "::warning::Could not fetch $1"
+            fi
+          }
+          fetch acsc-alerts      https://www.cyber.gov.au/rss/alerts
+          fetch mitre-blog       https://medium.com/feed/mitre-attack
+          fetch acsc-advisories  https://www.cyber.gov.au/rss/advisories
+          fetch acsc-news        https://www.cyber.gov.au/rss/news
+          fetch cisa             https://www.cisa.gov/cybersecurity-advisories/all.xml
+          fetch krebs            https://krebsonsecurity.com/feed/
+          fetch schneier         https://www.schneier.com/feed/atom/
+
+      - name: Commit if changed
+        run: |
+          git config user.name "feed-bot"
+          git config user.email "feed-bot@users.noreply.github.com"
+          git add feeds
+          if ! git diff --cached --quiet; then
+            git commit -m "Update feeds"
+            git push
+          fi
