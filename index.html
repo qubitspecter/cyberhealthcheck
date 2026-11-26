@@ -398,70 +398,78 @@
     });
   }
 
-  async function loadFeeds() {
-    const root = $('#feeds');
-    root.textContent = '';
-    const loadingEl = el('p', 'state', 'Loading feeds...');
-    root.appendChild(loadingEl);
-    // Single object holding all aggregated items and any per-feed errors
-    const feedStore = {
-      items: [],
-      errors: {}
-    };
-    await Promise.all(
-      FEEDS.map(async feed => {
-        try {
-          const xml = await fetchFeedText(feed.url);
-          const items = parseFeed(xml)
-            .slice(0, CONFIG.itemsPerFeed)
-            .map(item => ({
-              ...item,
-              sourceName: feed.name
-            }));
-          feedStore.items.push(...items);
-        } catch (e) {
-          feedStore.errors[feed.name] = e.message || 'Failed to load';
-        }
-      })
-    );
-    // Sort newest first; items without a valid date go last
-    feedStore.items.sort((a, b) => {
-      const timeA = a.date ? a.date.getTime() : -Infinity;
-      const timeB = b.date ? b.date.getTime() : -Infinity;
-      return timeB - timeA;
-    });
-    loadingEl.remove();
-    if (!feedStore.items.length) {
-      root.appendChild(el('p', 'state', 'No articles could be loaded right now.'));
-      return;
-    }
-    const ul = el('ul', 'feed-stream');
-    feedStore.items.forEach(it => {
-      const li = el('li');
-      const a = el('a', null, it.title);
-      a.href = safeUrl(it.link);
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      li.appendChild(a);
-      const source = el('span', 'source', ` — ${it.sourceName}`);
-      li.appendChild(source);
-      if (it.date) {
-        const t = el(
-          'time',
-          null,
-          it.date.toLocaleDateString('en-AU', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          })
-        );
-        t.dateTime = it.date.toISOString();
-        li.appendChild(t);
+async function loadFeeds() {
+  const root = $('#feeds');
+  root.textContent = '';
+
+  const box = el('section', 'feed');
+  box.appendChild(el('h3', null, 'Latest Updates'));
+  const status = el('p', 'state', 'Loading...');
+  box.appendChild(status);
+  root.appendChild(box);
+
+  const feedStore = {
+    items: [],
+    errors: {}
+  };
+
+  await Promise.all(
+    FEEDS.map(async feed => {
+      try {
+        const items = parseFeed(await fetchFeedText(feed.url))
+          .slice(0, CONFIG.itemsPerFeed)
+          .map(it => ({
+            ...it,
+            feedName: feed.name
+          }));
+
+        feedStore.items.push(...items);
+      } catch (e) {
+        feedStore.errors[feed.name] = e;
       }
-      ul.appendChild(li);
-    });
-    root.appendChild(ul);
+    })
+  );
+
+  feedStore.items.sort((a, b) => {
+    const timeA = a.date ? a.date.getTime() : -Infinity;
+    const timeB = b.date ? b.date.getTime() : -Infinity;
+    return timeB - timeA;
+  });
+
+  if (!feedStore.items.length) {
+    status.textContent = 'This feed could not be loaded right now.';
+    return;
   }
+
+  const ul = el('ul');
+  feedStore.items.forEach(it => {
+    const li = el('li');
+    const a = el('a', null, it.title);
+    a.href = safeUrl(it.link);
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    li.appendChild(a);
+
+    if (it.date) {
+      const t = el(
+        'time',
+        null,
+        it.date.toLocaleDateString('en-AU', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        })
+      );
+      t.dateTime = it.date.toISOString();
+      li.appendChild(t);
+    }
+
+    ul.appendChild(li);
+  });
+
+  status.replaceWith(ul);
+}
+ 
   /* ------------------------------------------------------------------
      Quiz rendering
   ------------------------------------------------------------------ */
