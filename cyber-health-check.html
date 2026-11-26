@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cyber Health Check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #f3f6f8;
+    --ink: #15232c;
+    --muted: #566873;
+    --line: #d3dce2;
+    --accent: #0a6a7b;
+    --accent-ink: #064a57;
+    --accent-tint: #e8f3f5;
+    --warn: #a8281f;
+    --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 5rem; }
+  body {
+    margin: 0;
+    font: 400 1rem/1.6 var(--font);
+    color: var(--ink);
+    background: var(--bg);
+  }
+  a { color: var(--accent-ink); text-underline-offset: 2px; }
+  a:hover { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem; }
+
+  /* Header */
+  .site-head { border-bottom: 1px solid var(--line); }
+  .site-head .wrap { display: flex; align-items: center; gap: .7rem; padding-block: .9rem; }
+  .site-head svg { flex: none; }
+  .brand { font-weight: 600; letter-spacing: .01em; }
+
+  /* Hero */
+  .hero { padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--line); }
+  .hero h1 {
+    margin: 0 0 1.5rem;
+    max-width: 18ch;
+    font-size: clamp(2rem, 4.5vw, 2.9rem);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -.015em;
+  }
+  .blurb { max-width: 66ch; border-left: 3px solid var(--accent); padding-left: 1.25rem; }
+  .blurb p { margin: 0 0 1rem; }
+  .blurb p:last-child { margin-bottom: 0; }
+
+  /* Layout */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 3rem;
+    padding: 2.5rem 0 4rem;
+    align-items: start;
+  }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+  h2 { margin: 0 0 .5rem; font-size: 1.4rem; line-height: 1.25; font-weight: 600; }
+  .lede { margin: 0 0 1.25rem; color: var(--muted); max-width: 62ch; }
+
+  /* Progress */
+  .progress {
+    position: sticky; top: 0; z-index: 5;
+    background: var(--bg);
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .progress-text { display: flex; justify-content: space-between; font-size: .9rem; color: var(--muted); margin-bottom: .4rem; }
+  .bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s ease; }
+  @media (prefers-reduced-motion: reduce) { .bar > span { transition: none; } }
+
+  /* Questions */
+  fieldset.q { border: 0; margin: 0; padding: 1.5rem 0; border-bottom: 1px solid var(--line); min-width: 0; }
+  fieldset.q legend { padding: 0; margin-bottom: .75rem; font-weight: 600; max-width: 62ch; }
+  .qn { display: inline-block; min-width: 2ch; margin-right: .5rem; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+  .qnote { margin: 0 0 .75rem; color: var(--muted); font-size: .95rem; }
+  .option {
+    display: flex; gap: .75rem; align-items: flex-start;
+    margin-top: .5rem; padding: .7rem .9rem;
+    border: 1px solid var(--line); border-radius: 4px;
+    cursor: pointer;
+  }
+  .option:hover { border-color: #aebdc6; }
+  .option:has(input:checked) { border-color: var(--accent); background: var(--accent-tint); }
+  .option input { margin-top: .3rem; accent-color: var(--accent); }
+  .q.unanswered legend { color: var(--warn); }
+  .q-error { display: none; margin: .5rem 0 0; color: var(--warn); font-size: .9rem; }
+  .q.unanswered .q-error { display: block; }
+
+  /* Image questions */
+  .img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 520px) { .img-grid { grid-template-columns: 1fr; } }
+  .img-choice { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg); }
+  .img-choice:has(input:checked) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .img-choice label { display: block; cursor: pointer; flex: 1; }
+  .img-choice img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--panel); }
+  .pick { display: flex; gap: .6rem; align-items: center; padding: .6rem .8rem; }
+  .pick input { accent-color: var(--accent); }
+  .zoom-btn {
+    appearance: none; width: 100%;
+    border: 0; border-top: 1px solid var(--line);
+    background: var(--panel); color: var(--accent-ink);
+    font: 500 .9rem var(--font);
+    padding: .55rem; cursor: pointer;
+  }
+  .zoom-btn:hover { background: var(--accent-tint); }
+
+  /* Submit */
+  .submit-row { padding-top: 1.75rem; }
+  .field { max-width: 26rem; margin-bottom: 1.25rem; }
+  .field label { display: block; font-weight: 500; margin-bottom: .3rem; }
+  .field input {
+    width: 100%; font: inherit; color: inherit;
+    padding: .6rem .75rem; border: 1px solid #aebdc6; border-radius: 4px; background: var(--bg);
+  }
+  .field small { display: block; margin-top: .3rem; color: var(--muted); }
+  .btn {
+    appearance: none; border: 1px solid var(--accent); border-radius: 4px;
+    background: var(--accent); color: #fff;
+    font: 600 1rem var(--font);
+    padding: .7rem 1.4rem; cursor: pointer;
+  }
+  .btn:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+  .btn:disabled { opacity: .6; cursor: wait; }
+  .btn.secondary { background: var(--bg); color: var(--accent-ink); }
+  .btn.secondary:hover { background: var(--accent-tint); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* Result */
+  .result { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); padding: 1.75rem; }
+  .result[hidden] { display: none; }
+  .result h2 { font-size: 1.6rem; }
+  .score { display: flex; align-items: baseline; gap: .6rem; margin: 1rem 0 .5rem; font-variant-numeric: tabular-nums; }
+  .score strong { font-size: 3rem; line-height: 1; font-weight: 600; }
+  .score span { color: var(--muted); }
+  .band { font-weight: 600; margin: 0 0 .25rem; }
+  .meter { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: .75rem 0 1.25rem; }
+  .meter > span { display: block; height: 100%; background: var(--accent); }
+  .send-status { margin: 1rem 0 1.25rem; font-size: .95rem; color: var(--muted); }
+  .send-status.bad { color: var(--warn); }
+
+  /* Feeds */
+  .feeds { position: sticky; top: 1.5rem; }
+  .feeds h2 { font-size: 1.1rem; }
+  .feeds .lede { font-size: .9rem; margin-bottom: 1rem; }
+  .feed { border-top: 1px solid var(--line); padding: .9rem 0; }
+  .feed h3 { margin: 0 0 .4rem; font-size: .95rem; font-weight: 600; }
+  .feed ul { list-style: none; margin: 0; padding: 0; }
+  .feed li { margin: 0 0 .6rem; font-size: .9rem; line-height: 1.4; }
+  .feed li time { display: block; color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+  .feed .state { margin: 0; font-size: .9rem; color: var(--muted); }
+  @media (max-width: 900px) { .feeds { position: static; } }
+
+  /* Modal */
+  dialog { padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); max-width: 94vw; }
+  dialog::backdrop { background: rgba(21, 35, 44, .6); }
+  .zoom-body { padding: 1rem; max-width: min(94vw, 1100px); max-height: 92vh; overflow: auto; }
+  .zoom-body img { display: block; max-width: 100%; max-height: 68vh; margin: 0 auto; object-fit: contain; cursor: zoom-in; }
+  .zoom-body.full img { max-width: none; max-height: none; cursor: zoom-out; }
+  .zoom-cap { margin: .75rem 0 0; font-weight: 500; }
+  .zoom-hint { margin: .1rem 0 .9rem; color: var(--muted); font-size: .85rem; }
+  .zoom-actions { display: flex; gap: .75rem; flex-wrap: wrap; position: sticky; bottom: 0; background: var(--bg); padding-top: .25rem; }
+
+  footer { border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <rect x="1" y="1" width="24" height="24" rx="3" stroke="#0a6a7b" stroke-width="2"/>
+      <path d="M4 14h5l2.5-6 3 11 2.5-5H22" stroke="#0a6a7b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span class="brand">Cyber Health Check</span>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Why does this page exist?</h1>
+    <div class="blurb">
+      <p>Cyber security looks like an industry that is failing. Major breaches now happen daily. The smaller ones land closer to home: it is hard to meet friends without one of them knowing someone directly affected by a hack since the last catch up.</p>
+      <p>Every MSP says they are cyber security experts. Every business says it handles your data securely. Are they lying? Do they not know any better? Or are they doing everything right, and this is as good as it gets?</p>
+      <p>This service exists to get past the marketing. We look at how businesses, big and small, actually use security, and we look for real answers as objectively as we can. There is no sponsorship. We are a few frustrated laypeople with research backgrounds, tired of being told our records have been stolen yet again.</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap layout">
+
+  <main id="quiz">
+    <h2>Health check</h2>
+    <p class="lede">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ten questions, about five minutes. Answer for the organisation you know best.</p>
+
+    <form id="quizForm" novalidate>
+      <div class="progress" aria-live="polite">
+        <div class="progress-text"><span id="progressText">0 of 10 answered</span></div>
+        <div class="bar"><span id="progressBar"></span></div>
+      </div>
+
+      <div id="questions"></div>
+
+      <div class="hp" aria-hidden="true">
+        <label>Leave this empty <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <div class="submit-row">
+        <div class="field">
+          <label for="email">Email address (optional)</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="name@example.com">
+          <small>Only if you would like us to reply to your result.</small>
+        </div>
+        <button class="btn" type="submit" id="submitBtn">Get my result</button>
+      </div>
+    </form>
+
+    <section class="result" id="result" hidden aria-live="polite" tabindex="-1">
+      <h2>Thank you</h2>
+      <p>You have completed the health check.</p>
+      <div class="score"><strong id="scoreNum">0</strong><span id="scoreMax">/ 0</span></div>
+      <div class="meter"><span id="scoreMeter" style="width:0"></span></div>
+      <p class="band" id="bandTitle"></p>
+      <p id="bandText"></p>
+      <p class="send-status" id="sendStatus"></p>
+      <button class="btn secondary" type="button" id="retake">Take the check again</button>
+    </section>
+  </main>
+
+  <aside class="feeds" aria-labelledby="feedsTitle">
+    <h2 id="feedsTitle">Latest from the field</h2>
+    <p class="lede">Live headlines from public security sources, loaded in your browser.</p>
+    <div id="feeds"></div>
+  </aside>
+
+</div>
+
+<footer>
+  <div class="wrap">Lorem ipsum dolor sit amet. This check is a general guide and not a security audit.</div>
+</footer>
+
+<dialog id="zoom" aria-label="Enlarged image">
+  <div class="zoom-body" id="zoomBody">
+    <img id="zoomImg" alt="">
+    <p class="zoom-cap" id="zoomCap"></p>
+    <p class="zoom-hint">Click the image to switch between fit and full size.</p>
+    <div class="zoom-actions">
+      <button class="btn" type="button" id="zoomSelect">Select this image</button>
+      <button class="btn secondary" type="button" id="zoomClose">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ------------------------------------------------------------------
+     CONFIG: edit these
+  ------------------------------------------------------------------ */
+  const CONFIG = {
+    web3formsKey: 'YOUR_WEB3FORMS_ACCESS_KEY',
+    subject: 'Cyber health check result',
+    fromName: 'Cyber Health Check',
+    itemsPerFeed: 4
+  };
+
+  // Feeds shown in the sidebar. Verify each URL still resolves before launch.
+  const FEEDS = [
+    { name: 'MITRE ATT&CK blog',  url: 'https://medium.com/feed/mitre-attack' },
+    { name: 'CISA advisories',    url: 'https://www.cisa.gov/cybersecurity-advisories/all.xml' },
+    { name: 'Krebs on Security',  url: 'https://krebsonsecurity.com/feed/' },
+    { name: 'Schneier on Security', url: 'https://www.schneier.com/feed/atom/' }
+  ];
+
+  // Score bands, checked from the top. min is a fraction of the maximum score.
+  const BANDS = [
+    { min: 0.75, title: 'Lower risk',     text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.' },
+    { min: 0.45, title: 'Moderate risk',  text: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.' },
+    { min: 0,    title: 'Elevated risk',  text: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' }
+  ];
+
+  /* ------------------------------------------------------------------
+     QUESTIONS: replace the lorem ipsum
+     Text questions: options are {label, points}.
+     Image questions: two images, give points 2 to the correct one, 0 to the other.
+  ------------------------------------------------------------------ */
+  const opt = (label, points) => ({ label, points });
+  const textOptions = () => [
+    opt('Lorem ipsum dolor sit amet', 2),
+    opt('Consectetur adipiscing elit', 1),
+    opt('Sed do eiusmod tempor incididunt', 0)
+  ];
+
+  const QUESTIONS = [
+    { type: 'text',  prompt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit?', options: textOptions() },
+    { type: 'text',  prompt: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua?', options: textOptions() },
+    { type: 'text',  prompt: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco?', options: textOptions() },
+    { type: 'image', prompt: 'Which of these messages is the phishing attempt?',
+      note: 'Select Enlarge to inspect each image, then choose one.',
+      images: [
+        { src: 'images/phish-1-a.jpg', alt: 'Message A', points: 0 },
+        { src: 'images/phish-1-b.jpg', alt: 'Message B', points: 2 }
+      ] },
+    { type: 'text',  prompt: 'Duis aute irure dolor in reprehenderit in voluptate velit?', options: textOptions() },
+    { type: 'text',  prompt: 'Excepteur sint occaecat cupidatat non proident?', options: textOptions() },
+    { type: 'text',  prompt: 'Sunt in culpa qui officia deserunt mollit anim id est laborum?', options: textOptions() },
+    { type: 'image', prompt: 'Which of these pages is the fake login?',
+      note: 'Select Enlarge to inspect each image, then choose one.',
+      images: [
+        { src: 'images/phish-2-a.jpg', alt: 'Page A', points: 2 },
+        { src: 'images/phish-2-b.jpg', alt: 'Page B', points: 0 }
+      ] },
+    { type: 'text',  prompt: 'Curabitur pretium tincidunt lacus, nulla gravida orci a odio?', options: textOptions() },
+    { type: 'text',  prompt: 'Nullam varius, turpis et commodo pharetra, est eros bibendum elit?', options: textOptions() }
+  ];
+
+  /* ------------------------------------------------------------------
+     Helpers
+  ------------------------------------------------------------------ */
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  function el(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function placeholderImage(label) {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">' +
+      '<rect width="800" height="600" fill="#eef2f5"/>' +
+      '<rect x="40" y="40" width="720" height="520" fill="none" stroke="#aebdc6" stroke-width="2" stroke-dasharray="10 8"/>' +
+      '<text x="400" y="310" font-family="sans-serif" font-size="32" fill="#566873" text-anchor="middle">' + label + '</text></svg>';
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  }
+  function safeUrl(u) {
+    try {
+      const p = new URL(u, location.href);
+      return (p.protocol === 'http:' || p.protocol === 'https:') ? p.href : '#';
+    } catch (e) { return '#'; }
+  }
+
+  /* ------------------------------------------------------------------
+     RSS feeds (client side)
+     Many feeds block cross-origin requests, so each is tried directly
+     first, then through public CORS proxies. For production, host your
+     own small proxy (for example a Cloudflare Worker) and put it first.
+  ------------------------------------------------------------------ */
+  const ROUTES = [
+    u => 'https://feeds.cyberhealthcheck.org/?u=' + encodeURIComponent(u)
+  ];
+
+  async function fetchFeedText(url) {
+    let lastErr = new Error('No route');
+    for (const route of ROUTES) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      try {
+        const res = await fetch(route(url), { signal: ctrl.signal });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const text = await res.text();
+        if (!/<(rss|feed|rdf)/i.test(text)) throw new Error('Not a feed');
+        return text;
+      } catch (e) {
+        lastErr = e;
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    throw lastErr;
+  }
+
+  function parseFeed(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    if (doc.querySelector('parsererror')) throw new Error('Parse error');
+    return Array.from(doc.querySelectorAll('item, entry')).map(n => {
+      const title = (n.querySelector('title') || {}).textContent;
+      const linkEl = n.querySelector('link[rel="alternate"], link');
+      const link = linkEl ? (linkEl.getAttribute('href') || linkEl.textContent.trim()) : '';
+      const dateEl = n.querySelector('pubDate, published, updated, date');
+      const d = dateEl ? new Date(dateEl.textContent.trim()) : null;
+      return {
+        title: (title || 'Untitled').trim(),
+        link: link,
+        date: d && !isNaN(d) ? d : null
+      };
+    });
+  }
+
+  async function loadFeeds() {
+    const root = $('#feeds');
+    await Promise.all(FEEDS.map(async feed => {
+      const box = el('section', 'feed');
+      box.appendChild(el('h3', null, feed.name));
+      const status = el('p', 'state', 'Loading...');
+      box.appendChild(status);
+      root.appendChild(box);
+      try {
+        const items = parseFeed(await fetchFeedText(feed.url)).slice(0, CONFIG.itemsPerFeed);
+        if (!items.length) throw new Error('Empty feed');
+        const ul = el('ul');
+        items.forEach(it => {
+          const li = el('li');
+          const a = el('a', null, it.title);
+          a.href = safeUrl(it.link);
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          li.appendChild(a);
+          if (it.date) {
+            const t = el('time', null, it.date.toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' }));
+            t.dateTime = it.date.toISOString();
+            li.appendChild(t);
+          }
+          ul.appendChild(li);
+        });
+        status.replaceWith(ul);
+      } catch (e) {
+        status.textContent = 'This feed could not be loaded right now.';
+      }
+    }));
+  }
+
+  /* ------------------------------------------------------------------
+     Quiz rendering
+  ------------------------------------------------------------------ */
+  const form = $('#quizForm');
+  const qRoot = $('#questions');
+  const zoom = $('#zoom');
+  const zoomImg = $('#zoomImg');
+  const zoomBody = $('#zoomBody');
+  let zoomTarget = null;
+
+  function renderQuestions() {
+    qRoot.innerHTML = '';
+    QUESTIONS.forEach((q, i) => {
+      const fs = el('fieldset', 'q');
+      const legend = el('legend');
+      legend.appendChild(el('span', 'qn', (i + 1) + '.'));
+      legend.appendChild(document.createTextNode(q.prompt));
+      fs.appendChild(legend);
+      if (q.note) fs.appendChild(el('p', 'qnote', q.note));
+
+      if (q.type === 'text') {
+        q.options.forEach((o, j) => {
+          const label = el('label', 'option');
+          const input = el('input');
+          input.type = 'radio';
+          input.name = 'q' + i;
+          input.value = String(j);
+          label.appendChild(input);
+          label.appendChild(el('span', null, o.label));
+          fs.appendChild(label);
+        });
+      } else {
+        const grid = el('div', 'img-grid');
+        q.images.forEach((im, j) => {
+          const card = el('div', 'img-choice');
+          const label = el('label');
+          const img = el('img');
+          img.alt = im.alt;
+          img.loading = 'lazy';
+          img.addEventListener('error', function onErr() {
+            img.removeEventListener('error', onErr);
+            img.src = placeholderImage(im.alt + ' (add image)');
+          });
+          img.src = im.src;
+          const pick = el('div', 'pick');
+          const input = el('input');
+          input.type = 'radio';
+          input.name = 'q' + i;
+          input.value = String(j);
+          pick.appendChild(input);
+          pick.appendChild(el('span', null, im.alt));
+          label.appendChild(img);
+          label.appendChild(pick);
+          const btn = el('button', 'zoom-btn', 'Enlarge');
+          btn.type = 'button';
+          btn.setAttribute('aria-label', 'Enlarge ' + im.alt);
+          btn.addEventListener('click', () => openZoom(img, input, im.alt));
+          card.appendChild(label);
+          card.appendChild(btn);
+          grid.appendChild(card);
+        });
+        fs.appendChild(grid);
+      }
+      fs.appendChild(el('p', 'q-error', 'Choose an answer to continue.'));
+      qRoot.appendChild(fs);
+    });
+    updateProgress();
+  }
+
+  function answeredCount() {
+    return QUESTIONS.filter((q, i) => form.querySelector('input[name="q' + i + '"]:checked')).length;
+  }
+  function updateProgress() {
+    const n = answeredCount();
+    $('#progressText').textContent = n + ' of ' + QUESTIONS.length + ' answered';
+    $('#progressBar').style.width = (n / QUESTIONS.length * 100) + '%';
+  }
+  form.addEventListener('change', e => {
+    if (e.target.matches('input[type="radio"]')) {
+      const fs = e.target.closest('fieldset');
+      if (fs) fs.classList.remove('unanswered');
+      updateProgress();
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     Image zoom modal
+  ------------------------------------------------------------------ */
+  function openZoom(img, input, caption) {
+    zoomImg.src = img.currentSrc || img.src;
+    zoomImg.alt = img.alt;
+    $('#zoomCap').textContent = caption;
+    zoomTarget = input;
+    zoomBody.classList.remove('full');
+    zoom.showModal();
+  }
+  zoomImg.addEventListener('click', () => zoomBody.classList.toggle('full'));
+  $('#zoomClose').addEventListener('click', () => zoom.close());
+  $('#zoomSelect').addEventListener('click', () => {
+    if (zoomTarget) {
+      zoomTarget.checked = true;
+      zoomTarget.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    zoom.close();
+  });
+  zoom.addEventListener('click', e => { if (e.target === zoom) zoom.close(); });
+
+  /* ------------------------------------------------------------------
+     Scoring and submission
+  ------------------------------------------------------------------ */
+  function collect() {
+    let score = 0, max = 0;
+    const lines = [];
+    QUESTIONS.forEach((q, i) => {
+      const chosen = Number(form.querySelector('input[name="q' + i + '"]:checked').value);
+      const choices = q.type === 'text' ? q.options : q.images;
+      const best = Math.max.apply(null, choices.map(c => c.points));
+      const pick = choices[chosen];
+      score += pick.points;
+      max += best;
+      lines.push('Q' + (i + 1) + '. ' + q.prompt + '\n    Answer: ' + (pick.label || pick.alt) + ' (' + pick.points + '/' + best + ')');
+    });
+    return { score, max, lines };
+  }
+
+  function bandFor(ratio) {
+    return BANDS.find(b => ratio >= b.min) || BANDS[BANDS.length - 1];
+  }
+
+  async function sendResult(payload) {
+    const key = CONFIG.web3formsKey;
+    if (!key || key.indexOf('YOUR_') === 0) return { ok: false, notConfigured: true };
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(Object.assign({ access_key: key }, payload))
+      });
+      const data = await res.json().catch(() => ({}));
+      return { ok: res.ok && data.success === true, message: data.message };
+    } catch (e) {
+      return { ok: false, message: 'Network error' };
+    }
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    let firstMissing = null;
+    QUESTIONS.forEach((q, i) => {
+      const fs = qRoot.children[i];
+      const missing = !form.querySelector('input[name="q' + i + '"]:checked');
+      fs.classList.toggle('unanswered', missing);
+      if (missing && !firstMissing) firstMissing = fs;
+    });
+    if (firstMissing) {
+      firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const r = firstMissing.querySelector('input');
+      if (r) r.focus({ preventScroll: true });
+      return;
+    }
+
+    const { score, max, lines } = collect();
+    const ratio = max ? score / max : 0;
+    const band = bandFor(ratio);
+    const pct = Math.round(ratio * 100);
+
+    const btn = $('#submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const email = form.email.value.trim();
+    const payload = {
+      subject: CONFIG.subject + ': ' + score + '/' + max + ' (' + band.title + ')',
+      from_name: CONFIG.fromName,
+      message: 'Score: ' + score + ' / ' + max + ' (' + pct + '%)\nBand: ' + band.title + '\n\n' + lines.join('\n\n'),
+      score: score + '/' + max,
+      band: band.title,
+      botcheck: form.botcheck.checked
+    };
+    if (email) payload.email = email;
+
+    const outcome = await sendResult(payload);
+
+    $('#scoreNum').textContent = score;
+    $('#scoreMax').textContent = '/ ' + max;
+    $('#scoreMeter').style.width = pct + '%';
+    $('#bandTitle').textContent = band.title;
+    $('#bandText').textContent = band.text;
+    const status = $('#sendStatus');
+    status.classList.toggle('bad', !outcome.ok);
+    if (outcome.ok) {
+      status.textContent = 'Your answers have been sent to us. We appreciate your time.';
+    } else if (outcome.notConfigured) {
+      status.textContent = 'Results were not emailed because no Web3Forms access key is set.';
+    } else {
+      status.textContent = 'We could not send your answers' + (outcome.message ? ' (' + outcome.message + ')' : '') + '. Your score is shown above.';
+    }
+
+    form.hidden = true;
+    $('.lede', $('#quiz')).hidden = true;
+    const result = $('#result');
+    result.hidden = false;
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    result.focus({ preventScroll: true });
+    btn.disabled = false;
+    btn.textContent = 'Get my result';
+  });
+
+  $('#retake').addEventListener('click', () => {
+    form.reset();
+    renderQuestions();
+    form.hidden = false;
+    $('.lede', $('#quiz')).hidden = false;
+    $('#result').hidden = true;
+    $('#quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  renderQuestions();
+  loadFeeds();
+})();
+</script>
+</body>
+</html>
