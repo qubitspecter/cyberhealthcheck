@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clinical Workplace &amp; Systems Assessment</title>
+  <title>Cyber Health Check</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <style>
     body { font-variant-numeric: tabular-nums; }
@@ -23,51 +23,17 @@
       </div>
     </div>
   </header>
-  <main aria-label="Ten Question Clinical Assessment">
-    <div id="stickyProgressBar" class="sticky-top bg-body bg-opacity-75 border-bottom shadow-sm py-2">
-      <div class="container">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="badge text-bg-dark font-monospace">ASSESSMENT</span>
-          <span id="progressStatusText" class="fw-semibold small">Completed: 0 of 10</span>
-        </div>
-        <div class="progress" style="height: 8px" role="progressbar" aria-label="Quiz completion progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-          <div id="quizProgressBarFill" class="progress-bar" style="width: 0%"></div>
-        </div>
-      </div>
-    </div>
+  <main aria-label="Ten Question Cyber health Check">
     <section class="container py-4 py-md-5">
       <div class="row justify-content-center">
         <div class="col-12 col-lg-9 col-xl-8">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
             <div>
-              <h2 class="h4 fw-bold mb-1">Standardized 10-Item Protocol Check</h2>
-              <p class="text-body-secondary small mb-0">Select one response per item. Immediate telemetry feedback is displayed after each selection.</p>
+              <h2 class="h4 fw-bold mb-1">10 Question Cyber Health Check/h2>
+              <p class="text-body-secondary small mb-0">Select one response per item. Immediate feedback is displayed after each selection.</p>
             </div>
-            <span class="font-monospace text-body-secondary small">REF: ISO-9241 / CLEAN-OPS</span>
           </div>
           <div id="questionsContainer" class="d-flex flex-column gap-4"></div>
-          <div id="quiz-summary" class="card border-0 border-top border-primary border-4 shadow mt-5 d-none" tabindex="-1">
-            <div class="card-body p-4 p-md-5">
-              <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-                <span class="badge text-bg-info font-monospace">DIAGNOSTIC SUMMARY REPORT</span>
-                <span id="summaryStatusBadge" class="badge fs-6 px-3 py-2">PROTOCOL CERTIFIED</span>
-              </div>
-              <h3 class="h4 fw-bold mb-2">Assessment Cycle Complete</h3>
-              <p id="summaryNarrative" class="text-body-secondary mb-4"></p>
-              <div class="row g-3 mb-4">
-                <div class="col-12 col-sm-4">
-                  <div class="border rounded bg-body-tertiary p-3">
-                    <div class="small text-body-secondary text-uppercase fw-semibold">Completion</div>
-                    <div class="h4 fw-bold mb-0 mt-1 text-success">10 / 10 Items</div>
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top">
-                <span class="small text-body-secondary">Need to re-run calibration? Reset all responses to begin a fresh pass.</span>
-                <button type="button" id="resetQuizBtn" class="btn btn-primary">Reset Quiz</button>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -97,7 +63,6 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content shadow">
         <div class="modal-header border-0 pb-1">
-          <span id="modalStatusBadge" class="badge rounded-pill px-3 py-2 fs-6 me-2">Correct</span>
           <span id="modalQuestionRef" class="font-monospace small text-body-secondary me-auto">ITEM 01 / 10</span>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close feedback dialog"></button>
         </div>
