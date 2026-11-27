@@ -17,62 +17,78 @@ FEEDS = {
 PER_FEED, PER_BLOCK = 3, 6
 PAGE = Path('index.html')
 EPOCH = datetime.min.replace(tzinfo=timezone.utc)
+DATE_TAGS = ('pubDate', 'published', 'updated', 'date')
+LINK_CLASS = 'link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium'
+
 
 def local(tag):
     return tag.rsplit('}', 1)[-1]
 
-def when(s):
+
+def parse_date(s):
     for parse in (parsedate_to_datetime, lambda x: datetime.fromisoformat(x.replace('Z', '+00:00'))):
         try:
             d = parse(s)
             return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
-        except Exception:
+        except ValueError:
             pass
     return EPOCH
+
 
 def read(name, path):
     try:
         root = ET.parse(path).getroot()
-    except Exception as e:
+    except (ET.ParseError, OSError) as e:
         print(f'skipping {name}: {e}', file=sys.stderr)
         return []
-    out = []
-    for n in root.iter():
-        if local(n.tag) not in ('item', 'entry'):
+
+    items = []
+    for node in root.iter():
+        if local(node.tag) not in ('item', 'entry'):
             continue
-        f = {'name': name, 'title': 'Untitled', 'link': '', 'date': EPOCH}
-        seen = set()
-        for c in n:
-            k, v = local(c.tag), (c.text or '').strip()
-            if k == 'link' and 'link' not in seen and c.get('rel', 'alternate') == 'alternate':
-                f['link'], _ = c.get('href') or v, seen.add('link')
-            elif k == 'title' and 'title' not in seen:
-                f['title'], _ = v or 'Untitled', seen.add('title')
-            elif k in ('pubDate', 'published', 'updated', 'date') and 'date' not in seen:
-                f['date'], _ = when(v), seen.add('date')
-        if f['link'].lower().startswith(('http://', 'https://')):
-            out.append(f)
-    return sorted(out, key=lambda i: i['date'], reverse=True)[:PER_FEED]
+        item = {'name': name, 'title': None, 'link': None, 'date': None}
+        for c in node:  # first value found for each field wins
+            key, text = local(c.tag), (c.text or '').strip()
+            if key == 'link' and item['link'] is None and c.get('rel', 'alternate') == 'alternate':
+                item['link'] = c.get('href') or text
+            elif key == 'title' and item['title'] is None:
+                item['title'] = text
+            elif key in DATE_TAGS and item['date'] is None:
+                item['date'] = parse_date(text)
+        if (item['link'] or '').lower().startswith(('http://', 'https://')):
+            item['title'] = item['title'] or 'Untitled'
+            item['date'] = item['date'] or EPOCH
+            items.append(item)
+    return sorted(items, key=lambda i: i['date'], reverse=True)[:PER_FEED]
+
+
+def row(i):
+    d = i['date']
+    meta = html.escape(i['name'])
+    if d != EPOCH:
+        meta += f' · <time datetime="{d:%Y-%m-%d}">{d.day} {d:%b}</time>'
+    return (f'<li class="list-group-item px-0">'
+            f'<small class="d-block text-body-secondary">{meta}</small>'
+            f'<a class="{LINK_CLASS}" href="{html.escape(i["link"], quote=True)}" '
+            f'target="_blank" rel="noopener noreferrer">{html.escape(i["title"])}</a></li>')
+
 
 def render(chunk):
-    def row(i):
-        d = i['date']
-        when = f'<time datetime="{d:%Y-%m-%d}">{d.day} {d:%b}</time>' if d != EPOCH else ''
-        meta = html.escape(i['name']) + (f' · {when}' if when else '')
-        return (f'<li><span class="feed-meta">{meta}</span>'
-                f'<a href="{html.escape(i["link"], quote=True)}" target="_blank" '
-                f'rel="noopener noreferrer">{html.escape(i["title"])}</a></li>')
-    return '<ul class="feed-list">' + ''.join(row(i) for i in chunk) + '</ul>'
+    return '<ul class="list-group list-group-flush">' + ''.join(map(row, chunk)) + '</ul>'
 
-items = sorted((i for n, p in FEEDS.items() for i in read(n, p)),
+
+items = sorted((i for name, path in FEEDS.items() for i in read(name, path)),
                key=lambda i: i['date'], reverse=True)
 if not items:
     sys.exit('No items found, leaving the page unchanged')
 
-page, n = PAGE.read_text(encoding='utf-8'), 0
-while f'<!-- feed{n}:start -->' in page:
-    block = render(items[n * PER_BLOCK:(n + 1) * PER_BLOCK])
-    page = re.sub(rf'(<!-- feed{n}:start -->).*?(<!-- feed{n}:end -->)',
-                  lambda m: m.group(1) + block + m.group(2), page, flags=re.S)
-    n += 1
+
+def fill(m):
+    n = int(m['n'])
+    return m['start'] + render(items[n * PER_BLOCK:(n + 1) * PER_BLOCK]) + m['end']
+
+
+page = PAGE.read_text(encoding='utf-8')
+page = re.sub(r'(?P<start><!-- feed(?P<n>\d+):start -->).*?(?P<end><!-- feed(?P=n):end -->)',
+              fill, page, flags=re.S)
 PAGE.write_text(page, encoding='utf-8')
