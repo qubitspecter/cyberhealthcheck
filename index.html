@@ -100,58 +100,102 @@
   const WEB3FORMS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
   const SUBJECT = "Quiz results";
   
-    const QUIZ = [
-      { id: 1, category: "ACCOUNTABILITY",
-        prompt: "What is the recommended viewing distance between an operator's eyes and a primary desktop monitor to minimize visual fatigue?",
-        options: ["20 to 30 centimeters (8 to 12 inches)", "50 to 70 centimeters (20 to 28 inches)", "110 to 130 centimeters (43 to 51 inches)", "Directly flush with the front edge of the desk"],
-        correctIndex: 1,
-        explanation: "Positioning a monitor 50 to 70 cm away (roughly an arm's length) allows the ciliary muscles of the eye to focus comfortably without sustained convergence strain." },
-      { id: 2, category: "INSURANCE",
-        prompt: "Which disinfectant concentration is standard for sanitizing non-porous office keyboards and mice without damaging surface polymers?",
-        options: ["70% isopropyl alcohol applied with a lint-free wipe", "Undiluted sodium hypochlorite (100% household bleach)", "Tap water mixed with standard dish soap", "Aerosol glass cleaner sprayed directly into key switches"],
-        correctIndex: 0,
-        explanation: "A 70% isopropyl alcohol solution denatures microbial proteins effectively while evaporating cleanly without leaving conductive or corrosive residue on electronics." },
-      { id: 3, category: "EMAIL",
-        prompt: "How should the top bezel of a primary display be vertically aligned relative to a seated user's eyes?",
-        options: ["15 centimeters above horizontal eye level", "At or slightly below horizontal eye level", "Aligned with the user's chest sternum", "Tilted downward at a 45-degree angle"],
-        correctIndex: 1,
-        explanation: "Aligning the top of the screen at or just below eye level maintains a natural 15°–20° downward gaze angle and prevents cervical spine hyperextension." },
-      { id: 4, category: "INTERFACE",
-        prompt: "During unstaffed night hours, what is the primary security protocol for workstation terminals left powered on for automated updates?",
-        options: ["Leave sessions unlocked so maintenance staff can inspect screens", "Disable network adapters manually before leaving", "Enforce an automatic encrypted screen lock within 3 minutes of inactivity", "Lower monitor brightness to zero without locking the OS"],
-        correctIndex: 2,
-        explanation: "Automated encrypted session locks prevent unauthorized physical access to sensitive systems while still permitting scheduled background patch management." },
-      { id: 5, category: "PATCHING",
-        prompt: "What is the minimum wet-contact dwell time required for alcohol-based surface wipes to achieve effective sanitization on desk surfaces?",
-        options: ["2 seconds followed by immediate dry wiping", "At least 30 seconds of visible surface wetness before air drying", "15 minutes of continuous submersion", "Dwell time is unnecessary once the surface is wiped"],
-        correctIndex: 1,
-        explanation: "Disinfectants require a minimum 30-second wet dwell period to rupture bacterial and viral envelopes; wiping dry prematurely neutralizes efficacy." },
-      { id: 6, category: "IMPROVEMENT",
-        prompt: "Which wrist and forearm posture prevents median nerve compression inside the carpal tunnel during extended typing?",
-        options: ["Wrists extended upward at 30 degrees on a hard desk edge", "Forearms parallel to the floor with wrists in a straight, neutral plane", "Elbows tucked tightly behind the torso with wrists angled outward", "Resting full forearm weight onto a sharp desk corner"],
-        correctIndex: 1,
-        explanation: "Keeping forearms level and wrists neutral minimizes pressure within the carpal tunnel and reduces repetitive strain on flexor tendons." },
-      { id: 7, category: "MALWARE",
-        prompt: "Why are critical workstation towers and network switches connected to an Uninterruptible Power Supply (UPS) rather than a standard surge strip?",
-        options: ["To increase processor clock speeds during peak hours", "To provide battery ride-through power and graceful shutdown during grid sags or outages", "To eliminate the need for building circuit breakers", "To double the voltage supplied to display monitors"],
-        correctIndex: 1,
-        explanation: "A UPS bridges transient voltage drops and blackouts with instant battery backup, preventing data corruption and hardware damage." },
-      { id: 8, category: "AUTHENTICATION",
-        prompt: "How should ambient lighting be configured in a small office with illuminated computer screens at night?",
-        options: ["Complete pitch darkness with monitors at 100% peak brightness", "Low-glare indirect bias lighting balanced to reduce screen-to-room contrast", "Direct unshielded overhead spotlights aimed at the monitor glass", "Flashing strobe indicators near the peripheral field of view"],
-        correctIndex: 1,
-        explanation: "Soft indirect bias lighting prevents pupil constriction-dilation fatigue caused by staring at a bright display inside a pitch-black room." },
-      { id: 9, category: "SESSIONS",
-        prompt: "What is the cleanest cable-management practice beneath clinical and technical workstations?",
-        options: ["Coiling excess power cables loosely on the floor around chair casters", "Routing cables through elevated under-desk trays off the floor for unobstructed sanitization", "Taping power cords across walkway thresholds", "Bundling high-voltage power cables tightly inside air intake vents"],
-        correctIndex: 1,
-        explanation: "Elevating cables into under-desk trays eliminates trip hazards, prevents caster damage, and allows floor surfaces to be sanitized unobstructed." },
-      { id: 10, category: "ADMINISTRATORS",
-        prompt: "How frequently should desk-based personnel perform a 20-second visual reset (20-20-20 rule) during continuous screen work?",
-        options: ["Every 20 minutes, focusing on an object at least 20 feet away", "Once every 4 hours during shift change", "Only when headaches or blurred vision begin", "Every 2 minutes by closing eyes tightly for 60 seconds"],
-        correctIndex: 0,
-        explanation: "Looking 20 feet away for 20 seconds every 20 minutes relaxes the eye's focusing mechanism and restores normal blink rates." }
-    ];
+  const QUIZ = [
+  { id: 1, category: "ACCOUNTABILITY",
+    prompt: "You pay an MSP to look after your IT. They get hacked, and so do you. Who answers to your clients, the regulators, and the courts?",
+    options: [
+      "The MSP\u2019s and our Cyber Insurance providers duke it out",
+      "Our MSP, they\u2019re the security experts, that's what we pay them for",
+      "Both of us, it's shared",
+      "We do. Always us."
+    ],
+    correctIndex: 3,
+    explanation: "You can delegate the work, not the accountability. Your clients, the regulator and your directors' duties all point at you. Your MSP's contract probably caps their liability at a few months of fees." },
+  { id: 2, category: "INSURANCE",
+    prompt: "You told your insurer MFA was on for everyone. It was on, but not enforced, so a few accounts could still sign in with just a password. One of those got breached. Your claim is...",
+    options: [
+      "Probably denied or the policy cancelled",
+      "Paid, MFA was \"enabled\"",
+      "Paid, but with a higher excess"
+    ],
+    correctIndex: 0,
+    explanation: "\"Enabled\" and \"enforced\" are different words to a claims assessor. Insurers have denied claims and rescinded policies over exactly this gap between the proposal form and reality." },
+  { id: 3, category: "EMAIL",
+    prompt: "Two emails land in your inbox.\n\nEmail A: \"Hi [you], great catching up at [the conference you posted about on LinkedIn]. Here's the deck I promised.\" It comes from a contact you know.\n\nEmail B: \"URGENT: Your mailbox is full!!! Click here to avoid deletion.\" It's from \"Microsoft Support Team\" at a random address.\n\nWhich one is phishing?",
+    options: [
+      "B, obviously",
+      "A, it's the dangerous one",
+      "Both",
+      "Neither, A is from my contact"
+    ],
+    correctIndex: 2,
+    explanation: "Both. B is a net cast at thousands. A is aimed at you, built from your public posts, possibly sent from your real contact's hacked account. If your defence is \"I'll spot it\", A is the one that gets through." },
+  { id: 4, category: "INTERFACE",
+    prompt: "You get two sign-in links.\n\n1. micros0ft-secure-login.xyz: a slightly dodgy page\n2. A page that looks pixel-perfect, with the right logo, your company branding, and it even accepts your MFA code\n\nWhich is safe to sign in on?",
+    options: [
+      "Neither can be trusted by looking",
+      "The second one, it looks perfect",
+      "The first one is a scam, the second is fine if the padlock is there"
+    ],
+    correctIndex: 0,
+    explanation: "The second is an adversary-in-the-middle proxy (think Evilginx). It relays the real Microsoft page, captures your password, your MFA code and your session, and the padlock is genuine. Your eyes cannot save you here. A passkey or FIDO2 key simply refuses to work on the wrong domain." },
+  { id: 5, category: "PATCHING",
+    prompt: "A critical flaw is fixed in this month's update. When was your software insecure?",
+    options: [
+      "Only until the patch was installed",
+      "From the day the patch was released",
+      "Long before. Possibly for years, and attackers may have known first."
+    ],
+    correctIndex: 2,
+    explanation: "Patching is housekeeping, not protection. Plenty of flaws sit in software for years before anyone finds or fixes them, and the attackers who found them early don't send a memo. Patch, but don't confuse it with being secure." },
+  { id: 6, category: "IMPROVEMENT",
+    prompt: "Which does more for your security?",
+    options: [
+      "Buying the highest rated, cutting edge security software",
+      "Having a SIEM monitored 24/7 by an AI assisted SOC",
+      "Reducing admin accounts, removing unused apps, services and stale users",
+      "Hiring a bigger, skilled IT team"
+    ],
+    correctIndex: 2,
+    explanation: "You can't be breached through something that doesn't exist. Every old account, app and service is attack surface and technical debt. The best control is a smaller target with well understood paths to that target." },
+  { id: 7, category: "MALWARE",
+    prompt: "Your antivirus guesses whether a file looks bad. App control only lets approved software run. Which is stronger?",
+    options: [
+      "App control: if it isn't approved, it doesn't run",
+      "Antivirus: it has millions of signatures",
+      "Both are about the same"
+    ],
+    correctIndex: 0,
+    explanation: "Antivirus is a probability game, and attackers test their malware against it before launch. App control is a yes or no. Brand new malware never makes the list." },
+  { id: 8, category: "AUTHENTICATION",
+    prompt: "Which is both more secure and easier to use?",
+    options: [
+      "A strong password with hardware MFA (dynamic six digit number on a keychain)",
+      "FIDO2, a tap, smile, or PIN and you're in",
+      "A memorable password with push MFA (tap the number that matches)",
+      "A very strong, high entropy password (e.g. \u201Ccorrect-horse-battery-staple\u201D) regularly changed"
+    ],
+    correctIndex: 1,
+    explanation: "Passkeys can't be phished, guessed, reused or leaked, and they're faster than typing. Rare case where the safer option is also the easier one." },
+  { id: 9, category: "SESSIONS",
+    prompt: "MFA is enforced for everyone. An attacker steals the browser session token from an employee's laptop. What happens?",
+    options: [
+      "They're in as that user, no password or MFA prompt needed",
+      "MFA blocks them",
+      "They need the password too"
+    ],
+    correctIndex: 0,
+    explanation: "The token is proof you already passed MFA. Steal it and you inherit the result. Standard MFA protects the door, not the session. Device-bound sessions and compliant-device requirements are what help." },
+  { id: 10, category: "ADMINISTRATORS",
+    prompt: "Think about your most powerful account. Which of these can take it over?",
+    options: [
+      "Only the Global Admin",
+      "Anyone who can reset its password or approve its MFA: helpdesk roles, your MSP's delegated access, service accounts, old app registrations",
+      "No one, MFA protects it"
+    ],
+    correctIndex: 1,
+    explanation: "Power in a tenant is rarely where people think. A helpdesk role, a forgotten app with broad permissions or a partner relationship can quietly outrank the CEO. Most security people can't list these off the top of their head." }
+];
 
   const $ = (id) => document.getElementById(id);
   const answers = new Map();   // question index -> chosen option index (never shown to the visitor)
