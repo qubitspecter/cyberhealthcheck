@@ -14,7 +14,7 @@ FEEDS = {
     'Krebs on Security':    'feeds/krebs.xml',
     'Schneier on Security': 'feeds/schneier.xml',
 }
-PER_FEED, PER_BLOCK = 6, 6
+PER_FEED, PER_BLOCK = 3, 6
 PAGE = Path('index.html')
 EPOCH = datetime.min.replace(tzinfo=timezone.utc)
 
@@ -52,9 +52,7 @@ def read(name, path):
                 f['date'], _ = when(v), seen.add('date')
         if f['link'].lower().startswith(('http://', 'https://')):
             out.append(f)
-        if len(out) == PER_FEED:
-            break
-    return out
+    return sorted(out, key=lambda i: i['date'], reverse=True)[:PER_FEED]
 
 def render(chunk):
     li = ''.join(
