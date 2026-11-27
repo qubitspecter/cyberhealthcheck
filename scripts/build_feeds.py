@@ -55,11 +55,14 @@ def read(name, path):
     return sorted(out, key=lambda i: i['date'], reverse=True)[:PER_FEED]
 
 def render(chunk):
-    li = ''.join(
-        f'<li class="mb-1"><a href="{html.escape(i["link"], quote=True)}" target="_blank" '
-        f'rel="noopener noreferrer">{html.escape(i["name"])}: {html.escape(i["title"])}</a></li>'
-        for i in chunk)
-    return f'<ul class="list-unstyled small text-secondary mb-0 pt-2 border-top">{li}</ul>'
+    def row(i):
+        d = i['date']
+        when = f'<time datetime="{d:%Y-%m-%d}">{d.day} {d:%b}</time>' if d != EPOCH else ''
+        meta = html.escape(i['name']) + (f' · {when}' if when else '')
+        return (f'<li><span class="feed-meta">{meta}</span>'
+                f'<a href="{html.escape(i["link"], quote=True)}" target="_blank" '
+                f'rel="noopener noreferrer">{html.escape(i["title"])}</a></li>')
+    return '<ul class="feed-list">' + ''.join(row(i) for i in chunk) + '</ul>'
 
 items = sorted((i for n, p in FEEDS.items() for i in read(n, p)),
                key=lambda i: i['date'], reverse=True)
