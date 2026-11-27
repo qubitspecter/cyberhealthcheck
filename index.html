@@ -129,16 +129,15 @@
     ],
     correctIndex: 0,
     explanation: "\"Enabled\" and \"enforced\" are different words to a claims assessor. Insurers have denied claims and rescinded policies over exactly this gap between the proposal form and reality." },
-  { id: 3, category: "EMAIL",
-    prompt: "Two emails land in your inbox.\n\nEmail A: \"Hi [you], great catching up at [the conference you posted about on LinkedIn]. Here's the deck I promised.\" It comes from a contact you know.\n\nEmail B: \"URGENT: Your mailbox is full!!! Click here to avoid deletion.\" It's from \"Microsoft Support Team\" at a random address.\n\nWhich one is phishing?",
-    options: [
-      "B, obviously",
-      "A, it's the dangerous one",
-      "Both",
-      "Neither, A is from my contact"
+   { id: 3, category: "EMAIL",
+    prompt: "Two emails land in your inbox. Which one is phishing? (Click an image to enlarge it.)",
+    images: [
+      { src: "img/email1.png", alt: "Email A" },
+      { src: "img/email2.png", alt: "Email B" }
     ],
+    options: ["Select A", "Select B", "Both", "Neither"],
     correctIndex: 2,
-    explanation: "Both. B is a net cast at thousands. A is aimed at you, built from your public posts, possibly sent from your real contact's hacked account. If your defence is \"I'll spot it\", you have no defence." },
+    explanation: "Both. B is a net cast at thousands. A is aimed at you, in this case built from a trusted contact's hacked account. If your defence is \"I'll spot it\", you have no defence." },
   { id: 4, category: "INTERFACE",
     prompt: "Which login interface can you trust? (Click an image to enlarge it.)",
     images: [
