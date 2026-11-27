@@ -138,15 +138,16 @@
     options: ["Select A", "Select B", "Both", "Neither"],
     correctIndex: 2,
     explanation: "Both. B is a net cast at thousands. A is aimed at you, in this case built from a trusted contact's hacked account. If your defence is \"I'll spot it\", you have no defence." },
-  { id: 4, category: "INTERFACE",
-    prompt: "Which login interface can you trust? (Click an image to enlarge it.)",
-    images: [
-      { src: "img/interface1.png", alt: "Sign-in page A", width: 995, height: 635 },
-      { src: "img/interface2.png", alt: "Sign-in page B", width: 995, height: 635 }
+  { id: 4, category: "AUTHENTICATION",
+    prompt: "You've spent years being told to make passwords longer, weirder, and change them more often, then bolt MFA on top. So which of these is both the most secure and the easiest to use?",
+    options: [
+      "A long passphrase (e.g. \"correct-horse-battery-staple\") plus an authenticator app code",
+      "A 30-character random password from a password manager, plus a hardware token code",
+      "A strong password, changed regularly, with push MFA (tap the number that matches)",
+      "Nothing to remember or type: a tap, a smile or a PIN on your own device (FIDO2)"
     ],
-    options: ["Select A", "Select B", "Both", "Neither"],
     correctIndex: 3,
-    explanation: "The second is an adversary-in-the-middle proxy. It relays the real page, captures your password, your MFA code and your session, and the padlock is genuine. No amount of awareness training can help you here, a technical solution is required." },
+    explanation: "Everything you were taught was a workaround for passwords being weak. Passkeys (FIDO2) can't be phished, guessed, reused or leaked, and they're faster than typing. Rare case where the safer option is also the easier one." },
     { id: 5, category: "PATCHING",
     prompt: "A critical flaw is fixed in this month's update. When was your software insecure?",
     options: [
@@ -175,16 +176,15 @@
     ],
     correctIndex: 0,
     explanation: "Antivirus is a probability game, and attackers test their malware against it before launch. App control is a yes or no. Brand new malware never makes the list." },
-    { id: 8, category: "AUTHENTICATION",
-    prompt: "You've spent years being told to make passwords longer, weirder, and change them more often, then bolt MFA on top. So which of these is both the most secure and the easiest to use?",
-    options: [
-      "A long passphrase (e.g. \"correct-horse-battery-staple\") plus an authenticator app code",
-      "A 30-character random password from a password manager, plus a hardware token code",
-      "A strong password, changed regularly, with push MFA (tap the number that matches)",
-      "Nothing to remember or type: a tap, a smile or a PIN on your own device (FIDO2)"
+    { id: 8, category: "INTERFACE",
+    prompt: "Which login interface can you trust? (Click an image to enlarge it.)",
+    images: [
+      { src: "img/interface1.png", alt: "Sign-in page A", width: 995, height: 635 },
+      { src: "img/interface2.png", alt: "Sign-in page B", width: 995, height: 635 }
     ],
+    options: ["Select A", "Select B", "Both", "Neither"],
     correctIndex: 3,
-    explanation: "Everything you were taught was a workaround for passwords being weak. Passkeys (FIDO2) can't be phished, guessed, reused or leaked, and they're faster than typing. Rare case where the safer option is also the easier one." },
+    explanation: "The second is an adversary-in-the-middle proxy. It relays the real page, captures your password, your MFA code and your session, and the padlock is genuine. No amount of awareness training can help you here, a technical solution is required." },
   { id: 9, category: "SESSIONS",
     prompt: "MFA is enforced for everyone. An attacker steals the browser session token from an employee's laptop. What happens?",
     options: [
