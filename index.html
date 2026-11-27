@@ -5,19 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clinical Workplace &amp; Systems Assessment</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-
   <style>
     body { font-variant-numeric: tabular-nums; }
-
-    /* Hero image overlay: Bootstrap has no background-image utilities
-    .hero {background: linear-gradient(135deg, rgb(15 23 42 / .9), rgb(15 23 42 / .8)), url("/img/bg.jpg") center / cover;} */
-    .hero {background: linear-gradient(135deg, rgb(15 23 42 / .7), rgb(15 23 42 / .6)), url("/img/bg.jpg") center / cover;}
-
+    .hero {background: linear-gradient(135deg, rgb(15 23 42 / .8), rgb(15 23 42 / .7)), url("/img/bg.jpg") center / cover;}
   </style>
 </head>
 <body class="bg-body-tertiary">
-
-  <!-- 1. Hero -->
   <header class="hero text-bg-dark py-5">
     <div class="container py-md-4">
       <div class="col-xl-10">
@@ -30,8 +23,6 @@
       </div>
     </div>
   </header>
-
-  <!-- 2. Quiz -->
   <main aria-label="Ten Question Clinical Assessment">
     <div id="stickyProgressBar" class="sticky-top bg-body bg-opacity-75 border-bottom shadow-sm py-2">
       <div class="container">
@@ -45,7 +36,6 @@
         </div>
       </div>
     </div>
-
     <section class="container py-4 py-md-5">
       <div class="row justify-content-center">
         <div class="col-12 col-lg-9 col-xl-8">
@@ -56,9 +46,7 @@
             </div>
             <span class="font-monospace text-body-secondary small">REF: ISO-9241 / CLEAN-OPS</span>
           </div>
-
           <div id="questionsContainer" class="d-flex flex-column gap-4"></div>
-
           <div id="quiz-summary" class="card border-0 border-top border-primary border-4 shadow mt-5 d-none" tabindex="-1">
             <div class="card-body p-4 p-md-5">
               <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
@@ -67,7 +55,6 @@
               </div>
               <h3 class="h4 fw-bold mb-2">Assessment Cycle Complete</h3>
               <p id="summaryNarrative" class="text-body-secondary mb-4"></p>
-
               <div class="row g-3 mb-4">
                 <div class="col-6 col-sm-4">
                   <div class="border rounded bg-body-tertiary p-3">
@@ -88,7 +75,6 @@
                   </div>
                 </div>
               </div>
-
               <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top">
                 <span class="small text-body-secondary">Need to re-run calibration? Reset all responses to begin a fresh pass.</span>
                 <button type="button" id="resetQuizBtn" class="btn btn-primary">Reset Quiz</button>
@@ -99,27 +85,19 @@
       </div>
     </section>
   </main>
-
-  <!-- 3. Feeds -->
-  <section class="bg-body-secondary border-top py-5" aria-label="Operational Standards Overview">
+  <section class="bg-body-secondary border-top py-5" aria-label="Cybersecurity News">
     <div class="container">
       <div class="col-lg-8 mb-4">
-        <span class="badge text-bg-info font-monospace mb-2">FACILITY BENCHMARKS</span>
-        <h2 class="h4 fw-bold mb-1">Core Workstation &amp; Environmental Standards</h2>
-        <p class="text-body-secondary small mb-0">Reference parameters governing night-cycle terminal operations, surface sanitization, and ergonomic alignment.</p>
+        <h2 class="h4 fw-bold mb-1">Cybersecurity News Feeds</h2>
+        <p class="text-body-secondary small mb-0">What's broken now. How it broke, technically. Commentary on why it broke. What might break next.</p>
       </div>
-
       <div class="row g-4">
         <div class="col-12 col-lg-4" id="feed0"><article class="card card-body h-100 border-0 border-top border-primary border-3 shadow-sm"><!-- feed0:start --><ul class="list-group list-group-flush"><li class="list-group-item px-0"><small class="d-block text-body-secondary">Schneier on Security · <time datetime="2026-11-25">25 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.schneier.com/blog/archives/2026/11/tracking-incidents-of-hacking-using-ai-tools.html" target="_blank" rel="noopener noreferrer">Tracking Incidents of Hacking Using AI Tools</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">CISA advisories · <time datetime="2026-11-25">25 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cisa.gov/news-events/alerts/2026/11/25/cisa-adds-10-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer">CISA Adds 10 Known Exploited Vulnerabilities to Catalog</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">Schneier on Security · <time datetime="2026-11-24">24 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.schneier.com/blog/archives/2026/11/we-get-the-infrastructure-we-pay-for.html" target="_blank" rel="noopener noreferrer">We Get the Infrastructure We Pay For</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">CISA advisories · <time datetime="2026-11-24">24 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cisa.gov/news-events/ics-advisories/icsa-26-328-01" target="_blank" rel="noopener noreferrer">AutomationDirect C-More EA9 Programming Software</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">CISA advisories · <time datetime="2026-11-24">24 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cisa.gov/news-events/alerts/2026/11/24/cisa-adds-three-known-exploited-vulnerabilities-catalog" target="_blank" rel="noopener noreferrer">CISA Adds Three Known Exploited Vulnerabilities to Catalog</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">Schneier on Security · <time datetime="2026-11-23">23 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.schneier.com/blog/archives/2026/11/humans-have-rights-machines-do-not.html" target="_blank" rel="noopener noreferrer">Humans Have Rights. Machines Do Not.</a></li></ul><!-- feed0:end --></article></div>
-
         <div class="col-12 col-lg-4" id="feed1"><article class="card card-body h-100 border-0 border-top border-primary border-3 shadow-sm"><!-- feed1:start --><ul class="list-group list-group-flush"><li class="list-group-item px-0"><small class="d-block text-body-secondary">Krebs on Security · <time datetime="2026-11-21">21 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://krebsonsecurity.com/2026/11/cto-of-ransomwarehelp-indicted-for-wire-fraud/" target="_blank" rel="noopener noreferrer">CTO of ‘RansomwareHelp’ Indicted for Wire Fraud</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">Krebs on Security · <time datetime="2026-11-18">18 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://krebsonsecurity.com/2026/11/attackers-used-optimizely-to-a-b-test-malware-on-top-websites/" target="_blank" rel="noopener noreferrer">Attackers Used Optimizely to A/B Test Malware on Top Websites</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC alerts · <time datetime="2026-11-17">17 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/alert/vulnerabilities-are-moving-quickly-so-patch-protect-prevent" target="_blank" rel="noopener noreferrer">Vulnerabilities are moving quickly, so patch, protect, prevent</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">Krebs on Security · <time datetime="2026-11-11">11 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://krebsonsecurity.com/2026/11/who-runs-the-ransomware-group-qilin/" target="_blank" rel="noopener noreferrer">Who Runs the Ransomware Group Qilin?</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC news · <time datetime="2026-11-06">6 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/news/secure-ai-testing-to-reduce-unauthorised-access" target="_blank" rel="noopener noreferrer">Secure AI testing to reduce unauthorised access</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC news · <time datetime="2026-11-05">5 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/news/new-guidance-on-open-weight-ai-models" target="_blank" rel="noopener noreferrer">New guidance on open-weight AI models</a></li></ul><!-- feed1:end --></article></div>
-
         <div class="col-12 col-lg-4" id="feed2"><article class="card card-body h-100 border-0 border-top border-primary border-3 shadow-sm"><!-- feed2:start --><ul class="list-group list-group-flush"><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC news · <time datetime="2026-11-05">5 Nov</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/news/updated-guidance-supports-vendor-talks-on-post-quantum-cryptography" target="_blank" rel="noopener noreferrer">Updated guidance supports vendor talks on post-quantum cryptography</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC alerts · <time datetime="2026-10-23">23 Oct</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/alert/critical-vulnerabilities-in-fortinet-products" target="_blank" rel="noopener noreferrer">Critical vulnerabilities in Fortinet products</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC alerts · <time datetime="2026-10-21">21 Oct</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/alert/critical-vulnerabilities-in-php" target="_blank" rel="noopener noreferrer">Critical vulnerabilities in PHP</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">MITRE ATT&amp;CK blog · <time datetime="2026-10-13">13 Oct</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://medium.com/mitre-attack/attack-v20-9701dd75ffb4?source=rss----6da19bd08fba---4" target="_blank" rel="noopener noreferrer">ATT&amp;CK v20: Critical Infrastructure Campaigns, Adversary Use and Abuse of AI, &amp; Iranian Cyber</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC advisories · <time datetime="2026-10-09">9 Oct</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/advisory/chinese-government-linked-cyber-threat-actors-combine-automated-and-hands-on-hacking-tools-to-steal-sensitive-data" target="_blank" rel="noopener noreferrer">Chinese government-linked cyber threat actors combine automated and hands-on hacking tools to steal sensitive data</a></li><li class="list-group-item px-0"><small class="d-block text-body-secondary">ACSC advisories · <time datetime="2026-09-25">25 Sep</time></small><a class="link-body-emphasis link-underline-opacity-0 link-underline-opacity-100-hover fw-medium" href="https://www.cyber.gov.au/advisory/protect-your-organisations-ai-services" target="_blank" rel="noopener noreferrer">Protect your organisations’ AI services</a></li></ul><!-- feed2:end --></article></div>
       </div>
     </div>
   </section>
-
-  <!-- 4. Footer -->
   <footer class="bg-body border-top py-3 text-center small text-body-secondary">
     <div class="container">
       <p class="m-0 text-truncate">
@@ -128,7 +106,6 @@
     </div>
   </footer>
 
-  <!-- Feedback modal -->
   <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content shadow">
