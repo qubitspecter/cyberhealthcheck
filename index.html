@@ -170,7 +170,6 @@
             <span class="text-primary fw-semibold">ITEM ${pad(q.id)}</span>
             <span class="text-body-secondary">&bull; ${q.category}</span>
           </span>
-          <span id="card-status-${q.id}" class="badge text-bg-light border font-monospace">PENDING</span>
         </div>
         <div class="card-body">
           <h3 id="question-title-${q.id}" class="h6 fw-semibold mb-3">${q.prompt}</h3>
@@ -192,7 +191,6 @@
 
     const q = QUIZ[qi];
     const ok = oi === q.correctIndex;
-    const tone = ok ? "success" : "danger";
 
     $(`question-${q.id}`).querySelectorAll(".list-group-item").forEach((btn, i) => {
       btn.classList.add("pe-none");
@@ -201,10 +199,6 @@
       else if (i === oi) btn.classList.add("list-group-item-danger");
       else btn.classList.add("text-body-secondary");
     });
-
-    const status = $(`card-status-${q.id}`);
-    status.className = `badge font-monospace text-bg-${tone}`;
-    status.textContent = ok ? "CORRECT" : "INCORRECT";
 
     $("modalQuestionRef").textContent = `ITEM ${pad(q.id)}`;
     $("modalExplanationText").textContent = q.explanation;
