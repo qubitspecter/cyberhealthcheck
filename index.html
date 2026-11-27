@@ -8,6 +8,8 @@
   <style>
     body { font-variant-numeric: tabular-nums; }
     .hero {background: linear-gradient(135deg, rgb(15 23 42 / .8), rgb(15 23 42 / .7)), url("/img/bg.jpg") center / cover;}
+    .img-thumb { cursor: zoom-in; }
+    .img-thumb:hover, .img-thumb:focus-visible { border-color: var(--bs-secondary) !important; }
   </style>
 </head>
 <body class="bg-body-tertiary">
@@ -93,6 +95,12 @@
   </div>
 </div>
 
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: min(995px, 95vw)">
+    <img id="imageModalImg" class="img-fluid rounded" alt="" data-bs-dismiss="modal" style="cursor: zoom-out">
+  </div>
+</div>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
 (() => {
@@ -132,15 +140,15 @@
     correctIndex: 2,
     explanation: "Both. B is a net cast at thousands. A is aimed at you, built from your public posts, possibly sent from your real contact's hacked account. If your defence is \"I'll spot it\", you have no defence." },
   { id: 4, category: "INTERFACE",
-    prompt: "You get two sign-in links.\n\n1. micros0ft-secure-login.xyz: a slightly dodgy page\n2. A page that looks pixel-perfect, with the right logo, your company branding, and it even accepts your MFA code\n\nWhich is safe to sign in on?",
-    options: [
-      "Neither can be trusted by looking",
-      "The second one, it looks perfect",
-      "The first one is a scam, the second is fine if the padlock is there"
+    prompt: "Which login interface can you trust? (Click an image to enlarge it.)",
+    images: [
+      { src: "img/interface1.png", alt: "Sign-in page A", width: 995, height: 635 },
+      { src: "img/interface2.png", alt: "Sign-in page B", width: 995, height: 635 }
     ],
-    correctIndex: 0,
-    explanation: "The second is an adversary-in-the-middle proxy. It relays the real page, captures your password, your MFA code and your session, and the padlock is genuine. No amount of awareness training can help you here." },
-  { id: 5, category: "PATCHING",
+    options: ["Select A", "Select B", "Both", "Neither"],
+    correctIndex: 3,
+    explanation: "The second is an adversary-in-the-middle proxy. It relays the real page, captures your password, your MFA code and your session, and the padlock is genuine. No amount of awareness training can help you here, a technical solution is required." },
+    { id: 5, category: "PATCHING",
     prompt: "A critical flaw is fixed in this month's update. When was your software insecure?",
     options: [
       "Only until the patch was installed",
@@ -207,6 +215,34 @@
   const scrollToCard = (el) =>
     el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
 
+function listOptions(q, qi) {
+  return `<div class="list-group" role="group" aria-label="Options for question ${q.id}">
+    ${q.options.map((o, oi) => `
+      <button type="button" class="list-group-item list-group-item-action d-flex gap-3 text-start" data-q="${qi}" data-o="${oi}">
+        <span class="badge text-bg-light border font-monospace align-self-start" aria-hidden="true">${"ABCD"[oi]}</span>
+        <span>${o}</span>
+      </button>`).join("")}
+  </div>`;
+}
+
+function imageOptions(q, qi) {
+  const btn = (oi) => `<button type="button" class="btn btn-outline-secondary w-100" data-q="${qi}" data-o="${oi}">${q.options[oi]}</button>`;
+  const n = q.images.length;
+  return `
+    <div class="row g-3 mb-3">
+      ${q.images.map((im, i) => `
+        <div class="col-12 col-sm-6">
+          <button type="button" class="img-thumb d-block w-100 p-0 mb-2 border border-2 rounded bg-transparent" data-full="${im.src}" data-alt="${im.alt}" aria-label="Enlarge ${im.alt}">
+            <img src="${im.src}" alt="${im.alt}" ${im.width ? `width="${im.width}" height="${im.height}"` : ""} class="img-fluid d-block">
+          </button>
+          ${btn(i)}
+        </div>`).join("")}
+    </div>
+    <div class="row g-3">
+      ${q.options.slice(n).map((_, k) => `<div class="col-6">${btn(n + k)}</div>`).join("")}
+    </div>`;
+}
+  
   function render() {
     $("questionsContainer").innerHTML = QUIZ.map((q, qi) => `
       <article id="question-${q.id}" class="card" aria-labelledby="question-title-${q.id}">
@@ -218,13 +254,7 @@
         </div>
         <div class="card-body">
           <h3 id="question-title-${q.id}" class="h6 fw-semibold mb-3">${q.prompt}</h3>
-          <div class="list-group" role="group" aria-label="Options for question ${q.id}">
-            ${q.options.map((o, oi) => `
-              <button type="button" class="list-group-item list-group-item-action d-flex gap-3 text-start" data-q="${qi}" data-o="${oi}">
-                <span class="badge text-bg-light border font-monospace align-self-start" aria-hidden="true">${"ABCD"[oi]}</span>
-                <span>${o}</span>
-              </button>`).join("")}
-          </div>
+          ${q.images ? imageOptions(q, qi) : listOptions(q, qi)}
         </div>
       </article>`).join("");
   }
@@ -237,13 +267,16 @@
     const q = QUIZ[qi];
     const ok = oi === q.correctIndex;
 
-    $(`question-${q.id}`).querySelectorAll(".list-group-item").forEach((btn, i) => {
-      btn.classList.add("pe-none");
-      btn.tabIndex = -1;
-      if (i === q.correctIndex) btn.classList.add("list-group-item-success", "fw-semibold");
-      else if (i === oi) btn.classList.add("list-group-item-danger");
-      else btn.classList.add("text-body-secondary");
-    });
+    $(`question-${q.id}`).querySelectorAll("button[data-q]").forEach((btn) => {
+  const i = +btn.dataset.o;
+  const isList = btn.classList.contains("list-group-item");
+  btn.classList.add("pe-none");
+  btn.tabIndex = -1;
+  if (!isList) btn.classList.remove("btn-outline-secondary");
+  if (i === q.correctIndex) btn.classList.add(...(isList ? ["list-group-item-success", "fw-semibold"] : ["btn-success", "fw-semibold"]));
+  else if (i === oi) btn.classList.add(isList ? "list-group-item-danger" : "btn-danger");
+  else btn.classList.add(...(isList ? ["text-body-secondary"] : ["btn-outline-secondary", "opacity-50"]));
+});
 
     $("modalQuestionRef").textContent = `ITEM ${pad(q.id)}`;
     $("modalCategory").textContent = q.category;
@@ -251,10 +284,18 @@
     modal.show();
   }
 
-  $("questionsContainer").addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-q]");
-    if (btn) answer(+btn.dataset.q, +btn.dataset.o);
-  });
+  const imageModal = new bootstrap.Modal($("imageModal"));
+$("questionsContainer").addEventListener("click", (e) => {
+  const thumb = e.target.closest("[data-full]");
+  if (thumb) {
+    $("imageModalImg").src = thumb.dataset.full;
+    $("imageModalImg").alt = thumb.dataset.alt || "";
+    imageModal.show();
+    return;
+  }
+  const btn = e.target.closest("button[data-q]");
+  if (btn) answer(+btn.dataset.q, +btn.dataset.o);
+});
 
   // After the feedback closes, move to the next unanswered question (wrapping around).
   $("feedbackModal").addEventListener("hidden.bs.modal", () => {
