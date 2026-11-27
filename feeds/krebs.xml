@@ -587,9 +587,9 @@
 <!--
 Performance optimized by W3 Total Cache. Learn more: https://www.boldgrid.com/w3-total-cache/?utm_source=w3tc&utm_medium=footer_comment&utm_campaign=free_plugin
 
-Object Caching 21/24 objects using Memcached
-Page Caching using Memcached 
+Object Caching 22/23 objects using Memcached
+Page Caching using Memcached (User agent is rejected) 
 Database Caching using Memcached
 
-Served from: krebsonsecurity.com @ 2026-11-26 19:32:03 by W3 Total Cache
+Served from: krebsonsecurity.com @ 2026-11-27 00:53:44 by W3 Total Cache
 -->
