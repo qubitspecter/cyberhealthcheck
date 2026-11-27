@@ -79,6 +79,7 @@
       <div class="modal-header">
         <div>
           <div id="modalQuestionRef" class="font-monospace small text-body-secondary"></div>
+          <h2 id="modalCategory"></h2>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -245,6 +246,7 @@
     });
 
     $("modalQuestionRef").textContent = `ITEM ${pad(q.id)}`;
+    $("modalCategory").textContent = q.category;
     $("modalExplanationText").textContent = q.explanation;
     modal.show();
   }
