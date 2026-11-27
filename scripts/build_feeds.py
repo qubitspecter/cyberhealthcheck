@@ -56,10 +56,10 @@ def read(name, path):
 
 def render(chunk):
     li = ''.join(
-        f'<li><a href="{html.escape(i["link"], quote=True)}" target="_blank" '
+        f'<li class="mb-1"><a href="{html.escape(i["link"], quote=True)}" target="_blank" '
         f'rel="noopener noreferrer">{html.escape(i["name"])}: {html.escape(i["title"])}</a></li>'
         for i in chunk)
-    return f'<ul>{li}</ul>'
+    return f'<ul class="list-unstyled small text-secondary mb-0 pt-2 border-top">{li}</ul>'
 
 items = sorted((i for n, p in FEEDS.items() for i in read(n, p)),
                key=lambda i: i['date'], reverse=True)
