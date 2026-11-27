@@ -1,0 +1,24 @@
+PRIVACY POLICY
+Last Updated: 27 November 2026
+
+1. OVERVIEW
+We respect your privacy and are committed to protecting it. This document explains how we handle the information you provide when using our service.
+
+2. ANONYMOUS DATA COLLECTION
+When you submit information, responses, or content through our platform, we collect that data anonymously. 
+- We do not attach personally identifiable information (PII) to your standard submissions.
+- We do not use tracking cookies or third-party analytics to link your anonymous submissions back to your real-world identity.
+- Anonymous data is used solely to operate, analyze, and improve our service.
+
+3. OPTIONAL EMAIL SUBMISSIONS
+Providing your email address is completely optional. If you choose to submit your email address:
+- Exclusive Purpose: Your email will ONLY be used to contact you directly regarding your feedback, as you have requested.
+- No Marketing: You will not be added to any newsletters, mailing lists, or promotional campaigns.
+- No Third-Party Sharing: We will never sell, rent, trade, or share your email address with third parties.
+
+4. DATA RETENTION AND DELETION
+- Anonymous data may be retained indefinitely for statistical and service-improvement purposes.
+- Your email address is retained only for as long as necessary to address your feedback request. You may request the deletion of your email address from our records at any time by replying to our correspondence or contacting us directly.
+
+5. CONTACT US
+If you have any questions about this privacy policy or wish to have your email address removed from our records, please contact us at: privacy@cyberhealthcheck.org
