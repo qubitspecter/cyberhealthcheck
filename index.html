@@ -193,7 +193,7 @@
       "They need the password too"
     ],
     correctIndex: 0,
-    explanation: "The token is proof you already passed MFA. Steal it and you inherit the result. Standard MFA protects the door, not the session. Device-bound sessions and compliant-device requirements are what help." },
+    explanation: "The token is proof you already passed MFA. Steal it and you inherit the result. MFA protects the door, not the session. Device-bound sessions and compliant-device requirements are what help." },
   { id: 10, category: "ADMINISTRATORS",
     prompt: "Think about your most powerful account. Which of these can take it over?",
     options: [
@@ -202,7 +202,7 @@
       "No one, MFA protects it"
     ],
     correctIndex: 1,
-    explanation: "Power in a tenant is rarely where people think. A helpdesk role, a forgotten app with broad permissions or a partner relationship can quietly outrank the CEO. Most security people can't list these off the top of their head." }
+    explanation: "Power in a tenant is rarely where people think. A helpdesk role, a forgotten app with broad permissions or a partner relationship can quietly outrank the CEO." }
 ];
 
   const $ = (id) => document.getElementById(id);
