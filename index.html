@@ -111,7 +111,7 @@
       "We do. Always us."
     ],
     correctIndex: 3,
-    explanation: "You can delegate the work, not the accountability. Your clients, the regulator and your directors' duties all point at you. Your MSP's contract probably caps their liability at a few months of fees." },
+    explanation: "You can delegate the work, not the accountability. Your clients, the regulator and your directors' duties all point at you." },
   { id: 2, category: "INSURANCE",
     prompt: "You told your insurer MFA was on for everyone. It was on, but not enforced, so a few accounts could still sign in with just a password. One of those got breached. Your claim is...",
     options: [
@@ -130,7 +130,7 @@
       "Neither, A is from my contact"
     ],
     correctIndex: 2,
-    explanation: "Both. B is a net cast at thousands. A is aimed at you, built from your public posts, possibly sent from your real contact's hacked account. If your defence is \"I'll spot it\", A is the one that gets through." },
+    explanation: "Both. B is a net cast at thousands. A is aimed at you, built from your public posts, possibly sent from your real contact's hacked account. If your defence is \"I'll spot it\", you have no defence." },
   { id: 4, category: "INTERFACE",
     prompt: "You get two sign-in links.\n\n1. micros0ft-secure-login.xyz: a slightly dodgy page\n2. A page that looks pixel-perfect, with the right logo, your company branding, and it even accepts your MFA code\n\nWhich is safe to sign in on?",
     options: [
@@ -139,7 +139,7 @@
       "The first one is a scam, the second is fine if the padlock is there"
     ],
     correctIndex: 0,
-    explanation: "The second is an adversary-in-the-middle proxy (think Evilginx). It relays the real Microsoft page, captures your password, your MFA code and your session, and the padlock is genuine. Your eyes cannot save you here. A passkey or FIDO2 key simply refuses to work on the wrong domain." },
+    explanation: "The second is an adversary-in-the-middle proxy. It relays the real page, captures your password, your MFA code and your session, and the padlock is genuine. No amount of awareness training can help you here." },
   { id: 5, category: "PATCHING",
     prompt: "A critical flaw is fixed in this month's update. When was your software insecure?",
     options: [
@@ -158,26 +158,26 @@
       "Hiring a bigger, skilled IT team"
     ],
     correctIndex: 2,
-    explanation: "You can't be breached through something that doesn't exist. Every old account, app and service is attack surface and technical debt. The best control is a smaller target with well understood paths to that target." },
+    explanation: "You can't be breached through something that doesn't exist. Every old account, app and service is attack surface and technical debt. ." },
   { id: 7, category: "MALWARE",
-    prompt: "Your antivirus guesses whether a file looks bad. App control only lets approved software run. Which is stronger?",
+    prompt: "Antivirus is built by major security companies, with countless engineers tracking millions of malware signatures and behaviours. App control is simply a list of software your business has approved. Which is stronger?",
     options: [
       "App control: if it isn't approved, it doesn't run",
-      "Antivirus: it has millions of signatures",
+      "Antivirus: it's backed by far more expertise and data",
       "Both are about the same"
     ],
     correctIndex: 0,
     explanation: "Antivirus is a probability game, and attackers test their malware against it before launch. App control is a yes or no. Brand new malware never makes the list." },
-  { id: 8, category: "AUTHENTICATION",
-    prompt: "Which is both more secure and easier to use?",
+    { id: 8, category: "AUTHENTICATION",
+    prompt: "You've spent years being told to make passwords longer, weirder, and change them more often, then bolt MFA on top. So which of these is both the most secure and the easiest to use?",
     options: [
-      "A strong password with hardware MFA (dynamic six digit number on a keychain)",
-      "FIDO2, a tap, smile, or PIN and you're in",
-      "A memorable password with push MFA (tap the number that matches)",
-      "A very strong, high entropy password (e.g. \u201Ccorrect-horse-battery-staple\u201D) regularly changed"
+      "A long passphrase (e.g. \"correct-horse-battery-staple\") plus an authenticator app code",
+      "A 30-character random password from a password manager, plus a hardware token code",
+      "A strong password, changed regularly, with push MFA (tap the number that matches)",
+      "Nothing to remember or type: a tap, a smile or a PIN on your own device (FIDO2)"
     ],
-    correctIndex: 1,
-    explanation: "Passkeys can't be phished, guessed, reused or leaked, and they're faster than typing. Rare case where the safer option is also the easier one." },
+    correctIndex: 3,
+    explanation: "Everything you were taught was a workaround for passwords being weak. Passkeys (FIDO2) can't be phished, guessed, reused or leaked, and they're faster than typing. Rare case where the safer option is also the easier one." },
   { id: 9, category: "SESSIONS",
     prompt: "MFA is enforced for everyone. An attacker steals the browser session token from an employee's laptop. What happens?",
     options: [
