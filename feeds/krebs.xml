@@ -9,7 +9,7 @@
 
 <channel>
 	<title>Krebs on Security</title>
-	<atom:link href="https://krebsonsecurity.com/feed/" rel="self" type="application/rss+xml" />
+	<atom:link href="https://krebsonsecurity.com/feed/?" rel="self" type="application/rss+xml" />
 	<link>https://krebsonsecurity.com</link>
 	<description>In-depth security news and investigation</description>
 	<lastBuildDate>Sat, 21 Nov 2026 00:36:39 +0000</lastBuildDate>
@@ -70,7 +70,7 @@
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://krebsonsecurity.com/2026/11/cto-of-ransomwarehelp-indicted-for-wire-fraud/feed/</wfw:commentRss>
-			<slash:comments>14</slash:comments>
+			<slash:comments>15</slash:comments>
 		
 		
 			</item>
@@ -123,7 +123,7 @@
 ]]></content:encoded>
 					
 					<wfw:commentRss>https://krebsonsecurity.com/2026/11/attackers-used-optimizely-to-a-b-test-malware-on-top-websites/feed/</wfw:commentRss>
-			<slash:comments>23</slash:comments>
+			<slash:comments>25</slash:comments>
 		
 		
 			</item>
@@ -587,9 +587,9 @@
 <!--
 Performance optimized by W3 Total Cache. Learn more: https://www.boldgrid.com/w3-total-cache/?utm_source=w3tc&utm_medium=footer_comment&utm_campaign=free_plugin
 
-Object Caching 22/23 objects using Memcached
-Page Caching using Memcached (User agent is rejected) 
+Object Caching 21/23 objects using Memcached
+Page Caching using Memcached 
 Database Caching using Memcached
 
-Served from: krebsonsecurity.com @ 2026-11-27 00:53:44 by W3 Total Cache
+Served from: krebsonsecurity.com @ 2026-11-28 00:27:43 by W3 Total Cache
 -->
